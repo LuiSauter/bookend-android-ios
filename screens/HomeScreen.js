@@ -5,7 +5,7 @@ import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-nati
 import AllPost from '../components/Post/AllPost'
 // import { useToggle } from '../hooks/useToggle'
 
-const HomeScreen = () => {
+const HomeScreen = ({ handleModal, showModal }) => {
   const { dark, colors } = useTheme()
   const [isAuth, setAuth] = useState(false)
   // const { googleAuth } = useAuth()
@@ -13,7 +13,13 @@ const HomeScreen = () => {
   // const { showModal, handleModal } = useToggle()
   // const { promptAsync, request, signOut } = Auth()
 
-  const containerStyle = { backgroundColor: colors.primary, padding: 30 }
+  const containerStyle = {
+    backgroundColor: colors.primary,
+    padding: 30,
+    borderRadius: 20,
+    // width: '90%',
+    marginHorizontal: '5%',
+  }
 
   return (
     <SafeAreaView
@@ -27,6 +33,46 @@ const HomeScreen = () => {
         backgroundColor={colors.primary}
       />
       <AllPost />
+      <Portal>
+        <Modal visible={showModal} onDismiss={handleModal} contentContainerStyle={containerStyle}>
+          <Text style={{ fontSize: 18 }}>Example Modal. Click outside this area to dismiss.</Text>
+          {!isAuth ? (
+            <TouchableRipple
+              onPress={handleModal}
+              rippleColor={colors.colorUnderlay}
+              borderless={true}
+              style={styles.Touchable}
+            >
+              <View style={[styles.button, { backgroundColor: colors.colorThirdBlue }]}>
+                <IconButton icon='logo-google' style={{ transform: [{ scale: 1.1 }] }} />
+                <Text style={styles.textLabel}>Iniciar sesión</Text>
+              </View>
+            </TouchableRipple>
+          ) : (
+            <TouchableRipple
+              onPress={handleModal}
+              rippleColor={colors.colorUnderlay}
+              borderless={true}
+              style={styles.Touchable}
+            >
+              <View style={[styles.button, { backgroundColor: colors.colorFourthRed }]}>
+                <IconButton icon='log-out-outline' style={{ transform: [{ scale: 1.2 }] }} />
+                <Text style={styles.textLabel}>Cerrar sesión</Text>
+              </View>
+            </TouchableRipple>
+          )}
+          <TouchableRipple
+            onPress={handleModal}
+            rippleColor={colors.colorUnderlay}
+            borderless={true}
+            style={styles.Touchable}
+          >
+            <View style={[styles.button, { backgroundColor: colors.textGray }]}>
+              <Text style={[styles.textLabel, { paddingVertical: 10 }]}>Cancelar</Text>
+            </View>
+          </TouchableRipple>
+        </Modal>
+      </Portal>
     </SafeAreaView>
   )
 }
@@ -34,6 +80,10 @@ const HomeScreen = () => {
 export default HomeScreen
 
 const styles = StyleSheet.create({
+  Touchable: {
+    borderRadius: 24,
+    marginTop: 18,
+  },
   button: {
     display: 'flex',
     flexDirection: 'row',
@@ -42,7 +92,7 @@ const styles = StyleSheet.create({
   },
   textLabel: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 })
