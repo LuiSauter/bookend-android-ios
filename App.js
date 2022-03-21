@@ -1,9 +1,11 @@
 import React from 'react'
-import { View, Text } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { IconButton, TouchableRipple, useTheme } from 'react-native-paper'
+import { useTheme } from 'react-native-paper'
 import TabNavigator from './navigation/TabNavigator'
 import SettingScreen from './screens/setting/SettingScreen'
+import DetailScreen from './screens/DetailScreen'
+import UserScreen from './screens/UserScreen'
+import NameUser from './components/NameUser'
 
 const Stack = createNativeStackNavigator()
 
@@ -24,6 +26,36 @@ const App = () => {
           headerStyle: { backgroundColor: colors.primary },
           headerTitleStyle: { color: colors.text },
           headerTintColor: colors.text,
+        })}
+      />
+      <Stack.Screen
+        name='DetailScreen'
+        component={DetailScreen}
+        options={() => ({
+          title: 'Book',
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.text,
+        })}
+      />
+      <Stack.Screen
+        name='UserScreen'
+        component={UserScreen}
+        options={({ route }) => ({
+          title: '',
+          headerStyle: { backgroundColor: `rgb(${route.params.dominantColor})` },
+          headerTintColor: 'white',
+          headerTitle: props => (
+            <NameUser
+              {...props}
+              name={route.params.name}
+              verified={false}
+              fontSize={17}
+              color='white'
+            />
+          ),
         })}
       />
     </Stack.Navigator>
