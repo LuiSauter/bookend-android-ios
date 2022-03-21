@@ -12,6 +12,9 @@ import userDefault from '../../assets/img/default-user.png'
 import NameUser from '../NameUser'
 import BtnOptions from '../Button/BtnOptions'
 import { colorsRandom } from '../../config/colors'
+import MultipleButtons from '../MultipleButtons'
+
+const backgroundTintColorRandom = colorsRandom[Math.floor(Math.random() * colorsRandom.length)]
 
 const AllPostItem = ({
   bookUrl,
@@ -45,9 +48,7 @@ const AllPostItem = ({
     }
   }, [data?.findUserById, getColor])
 
-  const activeModal = () => {
-    setIsVisible(!isVisible)
-  }
+  const activeModal = () => setIsVisible(!isVisible)
 
   const navigateToPost = () =>
     navigation.navigate('DetailScreen', {
@@ -74,7 +75,7 @@ const AllPostItem = ({
       likes,
     })
 
-  const navigateToProfile = () => () =>
+  const navigateToProfile = () =>
     navigation.navigate('UserScreen', {
       name: data?.findUserById.me.name,
       username: data?.findUserById.me.username,
@@ -90,6 +91,10 @@ const AllPostItem = ({
       website: data?.findUserById.website,
     })
 
+  const dominantColorString = dataDominantColor?.getColors
+    ? `rgb(${dataDominantColor?.getColors})`
+    : colors.primary
+
   return (
     <Fragment>
       {isVisible && (
@@ -97,9 +102,7 @@ const AllPostItem = ({
           barStyle={'light-content'}
           animated={false}
           showHideTransition={'none'}
-          backgroundColor={
-            dataDominantColor?.getColors ? `rgb(${dataDominantColor?.getColors})` : colors.primary
-          }
+          backgroundColor={dominantColorString}
           translucent={true}
         />
       )}
@@ -109,9 +112,7 @@ const AllPostItem = ({
         visible={isVisible}
         onRequestClose={activeModal}
         animationType='fade'
-        backgroundColor={
-          dataDominantColor?.getColors ? `rgb(${dataDominantColor?.getColors})` : colors.primary
-        }
+        backgroundColor={dominantColorString}
       />
       <TouchableRipple
         onPress={navigateToPost}
@@ -121,7 +122,12 @@ const AllPostItem = ({
         <View style={styles.postContainer}>
           <View style={styles.userImgContainer}>
             {data?.findUserById ? (
-              <TouchableRipple onPress={navigateToProfile} rippleColor={colors.border}>
+              <TouchableRipple
+                onPress={navigateToProfile}
+                rippleColor={colors.colorUnderlay}
+                borderless={true}
+                style={{ borderRadius: 50 }}
+              >
                 <Image style={styles.userImg} source={{ uri: data?.findUserById.me.photo }} />
               </TouchableRipple>
             ) : (
@@ -154,27 +160,28 @@ const AllPostItem = ({
                   : `${description.join('\n').toString().substring(0, 200)}...`}
               </Text>
             </View>
-            <TouchableOpacity
+            <TouchableRipple
               onPress={activeModal}
-              style={[styles.postImgContainer, { borderColor: colors.border }]}
-              activeOpacity={0.6}
+              style={[styles.postImgContainer, { borderColor: colors.border, borderRadius: 12 }]}
+              borderless={true}
+              rippleColor={colors.colorUnderlay}
             >
               {loading ? (
                 <View
                   style={{
                     height: 350,
                     width: '100%',
-                    backgroundColor: colorsRandom[Math.floor(Math.random() * colorsRandom.length)],
+                    backgroundColor: backgroundTintColorRandom,
                     borderRadius: 12,
                   }}
                 />
               ) : (
                 <Image style={styles.postImg} resizeMethod='resize' source={{ uri: image }} />
               )}
-            </TouchableOpacity>
-            {/* <View style={{ paddingVertical: 10 }}>
+            </TouchableRipple>
+            <View style={{ paddingVertical: 10 }}>
               <MultipleButtons title={title} bookUrl={bookUrl} id={id} />
-            </View> */}
+            </View>
           </View>
         </View>
       </TouchableRipple>
