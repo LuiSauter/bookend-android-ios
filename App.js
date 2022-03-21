@@ -1,28 +1,32 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React from 'react'
+import { View, Text } from 'react-native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { IconButton, TouchableRipple, useTheme } from 'react-native-paper'
+import TabNavigator from './navigation/TabNavigator'
+import SettingScreen from './screens/setting/SettingScreen'
 
-import React, { useState, useEffect } from 'react'
-import { Text, View } from 'react-native'
+const Stack = createNativeStackNavigator()
 
 const App = () => {
-  const [first, setfirst] = useState('')
-  useEffect(() => {
-    let cleanup = true
-    cleanup && setfirst('Hello World')
-    return () => {
-      cleanup = false
-    }
-  }, [])
-
+  const { colors } = useTheme()
   return (
-    <View style={{ backgroundColor: '#022', flex: 1 }}>
-      <Text>{first}</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name='TabNavigator'
+        component={TabNavigator}
+        options={{ headerShown: false, title: 'Inicio' }}
+      />
+      <Stack.Screen
+        name='SettingScreen'
+        component={SettingScreen}
+        options={() => ({
+          title: 'Ajustes',
+          headerStyle: { backgroundColor: colors.primary },
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.text,
+        })}
+      />
+    </Stack.Navigator>
   )
 }
 
