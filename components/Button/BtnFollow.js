@@ -1,0 +1,94 @@
+import React, { useEffect, memo, useCallback } from 'react'
+import { Text, TouchableOpacity } from 'react-native'
+import { useLazyQuery, useMutation } from '@apollo/client'
+import { useTheme } from '@react-navigation/native'
+
+import { useAuth } from '../../hooks/useAuth'
+import { FOLLOW_USER, UNFOLLOW_USER } from '../../user/graphql-mutation'
+import { FIND_USER } from '../../user/graphql-queries'
+
+const BtnFollow = ({ user }) => {
+  // const { handleModalVisible } = useToggle()
+  const { googleAuth } = useAuth()
+  const { colors } = useTheme()
+  const { status, email } = googleAuth
+  const [getUserByEmail, { data: dataUser }] = useLazyQuery(FIND_USER)
+  const [getFollow] = useMutation(FOLLOW_USER, {
+    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
+  })
+
+  const [getUnFollow] = useMutation(UNFOLLOW_USER, {
+    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
+  })
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      status === 'authenticated' && getUserByEmail({ variables: { email: email } })
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [email, getUserByEmail, status])
+
+  const handleClickButtonFollow = useCallback(
+    data => {
+      if (status === 'unauthenticated') {
+        // return handleModalVisible()
+      }
+      getFollow({ variables: { user: data, email: email } })
+    },
+    [email, getFollow, status],
+  )
+
+  const handleClickButtonUnFollow = data => {
+    getUnFollow({ variables: { user: data, email: email } })
+  }
+
+  const isMath =
+    status === 'authenticated' && dataUser?.findUser.following.some(userId => userId === user)
+
+  return isMath ? (
+    <TouchableOpacity
+      style={{ marginLeft: 16 }}
+      activeOpacity={0.6}
+      onPress={() => handleClickButtonUnFollow(user)}
+    >
+      <Text
+        style={{
+          color: colors.text,
+          borderWidth: 1,
+          borderRadius: 16,
+          borderColor: colors.text,
+          paddingHorizontal: 10,
+          paddingBottom: 3,
+          paddingTop: 3,
+          fontSize: 16,
+        }}
+      >
+        Dejar de seguir
+      </Text>
+    </TouchableOpacity>
+  ) : (
+    <TouchableOpacity
+      style={{ marginLeft: 16 }}
+      activeOpacity={0.6}
+      onPress={() => handleClickButtonFollow(user)}
+    >
+      <Text
+        style={{
+          color: colors.white,
+          backgroundColor: colors.colorThirdBlue,
+          borderRadius: 16,
+          paddingHorizontal: 10,
+          paddingBottom: 4,
+          paddingTop: 2,
+          fontSize: 16,
+        }}
+      >
+        Seguir
+      </Text>
+    </TouchableOpacity>
+  )
+}
+export default memo(BtnFollow)
