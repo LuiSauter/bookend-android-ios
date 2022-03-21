@@ -1,7 +1,7 @@
-import { StyleSheet, Pressable, View, Image, Fragment, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import { StyleSheet, Pressable, View, Image } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-native-paper'
+import { IconButton, TouchableRipple, useTheme } from 'react-native-paper'
 import { useLazyQuery } from '@apollo/client'
 
 import userDefault from '../assets/img/default-user.png'
@@ -19,10 +19,10 @@ const TabNavigator = () => {
   const { googleAuth } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
   // const { showModal, handleModal } = useToggle()
-  // const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   // const [isAuth, setAuth] = useState(false)
 
-  // const handleModal = () => setShowModal(!showModal)
+  const handleModal = useCallback(() => setShowModal(!showModal), [showModal])
 
   useEffect(() => {
     let cleanup = true
@@ -87,7 +87,7 @@ const TabNavigator = () => {
               rippleColor={`${colors.colorThirdBlue}33`}
               style={styles.logoContainer}
               borderless={true}
-            // onPress={handleModal}
+              onPress={handleModal}
             >
               {googleAuth.status === 'unauthenticated' ? (
                 <Image
@@ -110,14 +110,16 @@ const TabNavigator = () => {
       >
         <Tab.Screen
           name='HomeScreen'
-          component={HomeScreen}
+          // component={HomeScreen}
           options={() => ({
             title: 'Inicio',
             tabBarIcon: ({ color, focused }) => (
               <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} size={22} />
             ),
           })}
-        />
+        >
+          {props => <HomeScreen {...props} handleModal={handleModal} showModal={showModal} />}
+        </Tab.Screen>
         <Tab.Screen
           name='BookScreen'
           component={BookScreen}
