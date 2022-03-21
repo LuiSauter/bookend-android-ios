@@ -53,7 +53,7 @@ const BtnOptions = ({ username, user }) => {
         onDismiss={showMenu}
         contentStyle={[
           styles.contentMenu,
-          { backgroundColor: colors.secondary, borderColor: colors.border },
+          { backgroundColor: colors.primary, borderColor: colors.border },
         ]}
       >
         <Menu.Item
@@ -119,11 +119,12 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   contentMenu: {
     borderRadius: 16,
     borderWidth: 1,
     flex: 1,
+    width: '100%',
   },
 })

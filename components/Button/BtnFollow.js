@@ -1,4 +1,4 @@
-import React, { useEffect, memo, useCallback } from 'react'
+import React, { useEffect, memo } from 'react'
 import { Text, TouchableOpacity } from 'react-native'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
@@ -31,15 +31,12 @@ const BtnFollow = ({ user }) => {
     }
   }, [email, getUserByEmail, status])
 
-  const handleClickButtonFollow = useCallback(
-    data => {
-      if (status === 'unauthenticated') {
-        // return handleModalVisible()
-      }
-      getFollow({ variables: { user: data, email: email } })
-    },
-    [email, getFollow, status],
-  )
+  const handleClickButtonFollow = data => {
+    if (status === 'unauthenticated') {
+      // return handleModalVisible()
+    }
+    getFollow({ variables: { user: data, email: email } })
+  }
 
   const handleClickButtonUnFollow = data => {
     getUnFollow({ variables: { user: data, email: email } })
