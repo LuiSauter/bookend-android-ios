@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Pressable, View, Image } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { IconButton, TouchableRipple, useTheme } from 'react-native-paper'
@@ -10,7 +10,7 @@ import { FIND_USER } from '../user/graphql-queries'
 import BookScreen from '../screens/BookScreen'
 import SearchScreen from '../screens/SearchScreen'
 import HomeScreen from '../screens/HomeScreen'
-// import { useToggle } from '../hooks/useToggle'
+import { useToggle } from '../hooks/useToggle'
 
 const Tab = createBottomTabNavigator()
 
@@ -18,11 +18,7 @@ const TabNavigator = () => {
   const { colors } = useTheme()
   const { googleAuth } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
-  // const { showModal, handleModal } = useToggle()
-  const [showModal, setShowModal] = useState(false)
-  // const [isAuth, setAuth] = useState(false)
-
-  const handleModal = useCallback(() => setShowModal(!showModal), [showModal])
+  const { showModal, toggleModal } = useToggle()
 
   useEffect(() => {
     let cleanup = true
@@ -33,8 +29,6 @@ const TabNavigator = () => {
       cleanup = false
     }
   }, [getUser, googleAuth.email, googleAuth.status])
-
-  // const containerStyle = { backgroundColor: colors.primary, padding: 30 }
 
   return (
     <>
@@ -60,7 +54,7 @@ const TabNavigator = () => {
             <Pressable
               {...props}
               android_ripple={{
-                color: `${colors.colorThirdBlue}33`,
+                color: colors.colorUnderlay,
                 borderless: true,
                 radius: 80,
               }}
@@ -76,7 +70,7 @@ const TabNavigator = () => {
                 color={colors.text}
                 borderless={true}
                 size={24}
-                rippleColor={`${colors.border}33`}
+                rippleColor={colors.border}
                 style={{ paddingTop: 1 }}
                 onPress={() => navigation.navigate('SettingScreen')}
               />
@@ -84,10 +78,10 @@ const TabNavigator = () => {
           ),
           headerRight: () => (
             <TouchableRipple
-              rippleColor={`${colors.colorThirdBlue}33`}
+              rippleColor={colors.colorUnderlay}
               style={styles.logoContainer}
               borderless={true}
-              onPress={handleModal}
+              onPress={toggleModal}
             >
               {googleAuth.status === 'unauthenticated' ? (
                 <Image
@@ -118,7 +112,7 @@ const TabNavigator = () => {
             ),
           })}
         >
-          {props => <HomeScreen {...props} handleModal={handleModal} showModal={showModal} />}
+          {props => <HomeScreen {...props} handleModal={toggleModal} showModal={showModal} />}
         </Tab.Screen>
         <Tab.Screen
           name='BookScreen'

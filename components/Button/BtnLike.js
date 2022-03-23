@@ -16,7 +16,7 @@ const BtnLike = ({ id }) => {
   const { colors } = useTheme()
   const [like, setLike] = useState(false)
   const [likeCount, setLikeCount] = useState(null)
-  const { handleModal } = useToggle()
+  const { toggleModal } = useToggle()
   const { data } = useQuery(FINDONE_POST, {
     variables: { id: id },
   })
@@ -65,7 +65,7 @@ const BtnLike = ({ id }) => {
 
   const handleLike = idUser => {
     if (status === 'unauthenticated') {
-      handleModal()
+      toggleModal()
     }
     if (status === 'authenticated') {
       getLike({ variables: { id: idUser, email: email } })
@@ -76,7 +76,7 @@ const BtnLike = ({ id }) => {
 
   const handleDisLike = idUser => {
     if (status === 'unauthenticated') {
-      handleModal()
+      toggleModal()
     }
     if (status === 'authenticated') {
       getDisLike({ variables: { id: idUser, email: email } })

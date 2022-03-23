@@ -16,15 +16,15 @@ import {
 } from 'react-native-paper'
 // import 'react-native-gesture-handler'
 
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+
 import App from './App'
 import { name as appName } from './app.json'
-import { DarkContext } from './context/DarkContext'
-import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ToggleContext } from './context/ToggleContext'
 import { colors, colorsLight } from './config/colors'
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 LogBox.ignoreLogs(['EventEmitter.removeListener'])
-// import { ToggleStateProvider } from './context/ToggleContext'
 
 const light = {
   ...PaperDefaultTheme,
@@ -44,7 +44,8 @@ const light = {
     colorLikeRed: colorsLight.colorLikeRed,
     white: '#fff',
     text: colorsLight.text,
-    border: colors.border,
+    border: colorsLight.border,
+    backdrop: colorsLight.colorUnderlay,
   },
 }
 const dark = {
@@ -66,6 +67,7 @@ const dark = {
     white: '#fff',
     text: colors.textWhite,
     border: colors.border,
+    backdrop: colors.colorUnderlay,
   },
 }
 
@@ -91,27 +93,29 @@ const client = new ApolloClient({
 export default function Main() {
   const colorScheme = Appearance.getColorScheme()
   const [isThemeDark, setIsThemeDark] = useState(colorScheme === 'dark')
+  const [showModal, setShow] = useState(false)
 
   const toggleTheme = useCallback(() => setIsThemeDark(!isThemeDark), [isThemeDark])
+  const toggleModal = useCallback(() => setShow(!showModal), [showModal])
 
-  const preferences = useMemo(() => ({ toggleTheme, isThemeDark }), [toggleTheme, isThemeDark])
+  const preferences = useMemo(() => {
+    return { toggleTheme, isThemeDark, toggleModal, showModal }
+  }, [toggleTheme, isThemeDark, toggleModal, showModal])
 
   return (
     <ApolloProvider client={client}>
-      <DarkContext.Provider value={preferences}>
+      <ToggleContext.Provider value={preferences}>
         <PaperProvider
           theme={isThemeDark ? dark : light}
           settings={{ icon: props => <Ionicons {...props} /> }}
         >
-          {/* <ToggleStateProvider> */}
           <SafeAreaProvider>
             <NavigationContainer theme={isThemeDark ? dark : light}>
               <App />
             </NavigationContainer>
           </SafeAreaProvider>
-          {/* </ToggleStateProvider> */}
         </PaperProvider>
-      </DarkContext.Provider>
+      </ToggleContext.Provider>
     </ApolloProvider>
   )
 }

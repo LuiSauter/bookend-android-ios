@@ -6,9 +6,10 @@ import { useTheme } from '@react-navigation/native'
 import { useAuth } from '../../hooks/useAuth'
 import { FOLLOW_USER, UNFOLLOW_USER } from '../../user/graphql-mutation'
 import { FIND_USER } from '../../user/graphql-queries'
+import { useToggle } from '../../hooks/useToggle'
 
 const BtnFollow = ({ user }) => {
-  // const { handleModalVisible } = useToggle()
+  const { toggleModal } = useToggle()
   const { googleAuth } = useAuth()
   const { colors } = useTheme()
   const { status, email } = googleAuth
@@ -33,7 +34,7 @@ const BtnFollow = ({ user }) => {
 
   const handleClickButtonFollow = data => {
     if (status === 'unauthenticated') {
-      // return handleModalVisible()
+      return toggleModal()
     }
     getFollow({ variables: { user: data, email: email } })
   }
