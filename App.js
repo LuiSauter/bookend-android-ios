@@ -1,11 +1,14 @@
 import React from 'react'
+import { Text } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { useTheme } from 'react-native-paper'
+import { IconButton, useTheme } from 'react-native-paper'
+
 import TabNavigator from './navigation/TabNavigator'
 import SettingScreen from './screens/setting/SettingScreen'
 import DetailScreen from './screens/DetailScreen'
 import UserScreen from './screens/UserScreen'
 import NameUser from './components/NameUser'
+import DisplayScreen from './screens/setting/DisplayScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -21,8 +24,18 @@ const App = () => {
       <Stack.Screen
         name='SettingScreen'
         component={SettingScreen}
-        options={() => ({
+        options={({ navigation }) => ({
           title: 'Ajustes',
+          headerStyle: { backgroundColor: colors.primary },
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.text,
+        })}
+      />
+      <Stack.Screen
+        name='DisplayScreen'
+        component={DisplayScreen}
+        options={() => ({
+          title: 'Pantalla y idiomas',
           headerStyle: { backgroundColor: colors.primary },
           headerTitleStyle: { color: colors.text },
           headerTintColor: colors.text,
