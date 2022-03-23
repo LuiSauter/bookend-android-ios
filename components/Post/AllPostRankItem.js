@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import { useQuery } from '@apollo/client'
 import { useNavigation, useTheme } from '@react-navigation/native'
 
@@ -7,6 +7,7 @@ import { colorsRandom } from '../../config/colors'
 import BtnLike from '../Button/BtnLike'
 import useTimeAgo from '../../hooks/useTimeAgo'
 import { FIND_USER_BY_USER } from '../../user/graphql-queries'
+import { TouchableRipple } from 'react-native-paper'
 
 const AllPostRankItem = ({
   bookUrl,
@@ -55,9 +56,20 @@ const AllPostRankItem = ({
   }
 
   return (
-    <TouchableHighlight onPress={navigatePost} underlayColor={colors.colorUnderlay}>
+    <TouchableRipple
+      onPress={navigatePost}
+      rippleColor={colors.colorUnderlay}
+      borderless={true}
+      style={{ width: '50%', flex: 1 }}
+    >
       <View style={styles.container}>
-        <View>
+        <View
+          style={{
+            padding: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Image style={styles.image} source={{ uri: image }} />
         </View>
         <View style={styles.TextAndLikes}>
@@ -65,7 +77,7 @@ const AllPostRankItem = ({
           <BtnLike id={id} likes={likes.length} />
         </View>
       </View>
-    </TouchableHighlight>
+    </TouchableRipple>
   )
 }
 
@@ -73,30 +85,28 @@ export default memo(AllPostRankItem)
 
 const styles = StyleSheet.create({
   container: {
-    flexShrink: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    maxWidth: 195,
-    padding: 10,
+    // width: '50%',
   },
   image: {
-    borderRadius: 10,
-    height: 'auto',
-    aspectRatio: 9 / 13,
-    resizeMode: 'cover',
     width: '100%',
+    // height: 20,
+    resizeMode: 'cover',
+    aspectRatio: 9 / 13,
+    borderRadius: 16,
   },
   text: {
     fontSize: 15,
-    width: '75%',
+    width: '70%',
     textAlign: 'center',
   },
   TextAndLikes: {
+    flex: 1,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 16,
     marginVertical: 4,
     minHeight: 45,
   },
