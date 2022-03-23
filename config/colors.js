@@ -19,7 +19,7 @@ export const colorsLight = {
   colorThirdPurple: '#5046bb',
   colorThirdYellow: '#ffc540',
   colorFourthRed: '#ef4444',
-  colorUnderlay: '#bae6fdaa',
+  colorUnderlay: '#0099ff33',
   colorLikeRed: '#ff1c85',
   text: '#000',
   TextGray: '#4D5B66',
