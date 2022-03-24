@@ -3,14 +3,14 @@ import { StyleSheet, StatusBar, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-native-paper'
 import AllPost from '../components/Post/AllPost'
-import { useToggle } from '../hooks/useToggle'
+// import { useToggle } from '../hooks/useToggle'
 
 const HomeScreen = () => {
   const { dark, colors } = useTheme()
-  const [isAuth, setAuth] = useState(false)
+  // const [isAuth, setAuth] = useState(false)
   // const { googleAuth } = useAuth()
   // const { status, name } = googleAuth
-  const { showModal, toggleModal } = useToggle()
+  // const { showModal, toggleModal } = useToggle()
   // const { promptAsync, request, signOut } = Auth()
 
   const containerStyle = {
@@ -20,7 +20,6 @@ const HomeScreen = () => {
     // width: '90%',
     marginHorizontal: '5%',
   }
-
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: colors.primary }]}
@@ -33,7 +32,7 @@ const HomeScreen = () => {
         backgroundColor={colors.primary}
       />
       <AllPost />
-      <Portal>
+      {/* <Portal>
         <Modal visible={showModal} onDismiss={toggleModal} contentContainerStyle={containerStyle}>
           <Text style={{ fontSize: 18 }}>Example Modal. Click outside this area to dismiss.</Text>
           {!isAuth ? (
@@ -72,7 +71,7 @@ const HomeScreen = () => {
             </View>
           </TouchableRipple>
         </Modal>
-      </Portal>
+      </Portal> */}
     </SafeAreaView>
   )
 }

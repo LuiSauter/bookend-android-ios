@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { FlatList, ActivityIndicator, RefreshControl } from 'react-native'
+import { FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from 'react-native-paper'
 
 import { ALL_POSTS, ALL_POSTS_COUNT } from '../../post/graphql-queries'
 import AllPostItem from './AllPostItem'
 
-const INITIAL_PAGE = 10
-const ITEM_HEIGHT = 700
+const INITIAL_PAGE = 12
+const ITEM_HEIGHT = 600
 
 const renderItem = ({ item }) => {
   return (
@@ -29,7 +29,7 @@ const renderItem = ({ item }) => {
 
 const getItemLayout = (data, index) => ({
   length: ITEM_HEIGHT,
-  offset: ITEM_HEIGHT * index,
+  offset: ITEM_HEIGHT * data.length,
   index,
 })
 
@@ -55,18 +55,26 @@ const AllPost = () => {
   useEffect(() => {
     let cleanup = true
     if (cleanup) {
-      if (currentPage !== INITIAL_PAGE) {
-        refetch({ pageSize: currentPage, skipValue: 0 })
+      if (currentPage === INITIAL_PAGE) {
+        return
       }
+      refetch({ pageSize: currentPage, skipValue: 0 })
     }
-    return () => (cleanup = false)
+    return () => {
+      cleanup = false
+    }
   }, [currentPage, refetch])
 
   const renderLoader = () => {
     return (
       isLoading && (
         <ActivityIndicator
-          style={{ marginBottom: 16 }}
+          style={{
+            marginBottom: 16,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          animating={true}
           color={colors.colorThirdBlue}
           size='small'
         />
@@ -74,37 +82,40 @@ const AllPost = () => {
     )
   }
 
-  const loadMoreItem = useCallback(() => {
+  const loadMoreItem = () => {
     if (allPostsCount && allPostsCount?.postCount === data?.allPosts.length) {
       return setIsLoading(false)
     }
     setCurrentPage(currentPage + INITIAL_PAGE)
-  }, [allPostsCount, currentPage, data?.allPosts.length])
+  }
 
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true)
     await refetch({ pageSize: INITIAL_PAGE, skipValue: 0 })
     setCurrentPage(INITIAL_PAGE)
     setIsLoading(true)
     setRefreshing(false)
-  }, [refetch])
+  }
 
-  return loading ? (
-    <ActivityIndicator
-      style={{ flex: 1, paddingTop: 24, paddingBottom: 16 }}
-      color={colors.colorThirdBlue}
-      size='large'
-    />
-  ) : (
+  return (
     <FlatList
       data={data?.allPosts}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
+      // ListHeaderComponent={() =>
+      //   loading && (
+      //     <ActivityIndicator
+      //       style={{ flex: 1, paddingTop: 24, paddingBottom: 16 }}
+      //       color={colors.colorThirdBlue}
+      //       size='large'
+      //     />
+      //   )
+      // }
       ListFooterComponent={renderLoader}
       onEndReached={loadMoreItem}
       getItemLayout={getItemLayout}
       initialNumToRender={INITIAL_PAGE}
-      onEndReachedThreshold={0}
+      onEndReachedThreshold={0.5}
       removeClippedSubviews={true}
       refreshControl={
         <RefreshControl

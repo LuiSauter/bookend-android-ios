@@ -1,7 +1,6 @@
 import React from 'react'
-import { Text } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { IconButton, useTheme } from 'react-native-paper'
+import { useTheme } from 'react-native-paper'
 
 import TabNavigator from './navigation/TabNavigator'
 import SettingScreen from './screens/setting/SettingScreen'
@@ -24,7 +23,7 @@ const App = () => {
       <Stack.Screen
         name='SettingScreen'
         component={SettingScreen}
-        options={({ navigation }) => ({
+        options={() => ({
           title: 'Ajustes',
           headerStyle: { backgroundColor: colors.primary },
           headerTitleStyle: { color: colors.text },

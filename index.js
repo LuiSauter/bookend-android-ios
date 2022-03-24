@@ -2,7 +2,7 @@
  * @format
  */
 
-import { AppRegistry, Appearance, LogBox } from 'react-native'
+import { AppRegistry, Appearance, LogBox, Text, View, StyleSheet } from 'react-native'
 import React, { useState, useCallback, useMemo } from 'react'
 import {
   NavigationContainer,
@@ -12,7 +12,12 @@ import {
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
+  IconButton,
+  Modal,
+  Portal,
   Provider as PaperProvider,
+  TouchableRipple,
+  useTheme,
 } from 'react-native-paper'
 // import 'react-native-gesture-handler'
 

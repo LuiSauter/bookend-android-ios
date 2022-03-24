@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, memo } from 'react'
+import React, { useState, useEffect, Fragment, useCallback } from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity, StatusBar } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useLazyQuery, useQuery } from '@apollo/client'
@@ -50,8 +50,8 @@ const AllPostItem = ({
 
   const activeModal = () => setIsVisible(!isVisible)
 
-  const navigateToPost = () =>
-    navigation.navigate('DetailScreen', {
+  const navigateToPost = useCallback(() => {
+    return navigation.navigate('DetailScreen', {
       id: id,
       createdAt,
       image,
@@ -74,9 +74,33 @@ const AllPostItem = ({
       comments,
       likes,
     })
+  }, [
+    author,
+    bookUrl,
+    comments,
+    createdAt,
+    data?.findUserById.description,
+    data?.findUserById.followers,
+    data?.findUserById.following,
+    data?.findUserById.location,
+    data?.findUserById.me.email,
+    data?.findUserById.me.name,
+    data?.findUserById.me.photo,
+    data?.findUserById.me.username,
+    data?.findUserById.me.verified,
+    data?.findUserById.website,
+    description,
+    hourAndMinute,
+    id,
+    image,
+    likes,
+    navigation,
+    title,
+    user,
+  ])
 
-  const navigateToProfile = () =>
-    navigation.navigate('UserScreen', {
+  const navigateToProfile = useCallback(() => {
+    return navigation.navigate('UserScreen', {
       name: data?.findUserById.me.name,
       username: data?.findUserById.me.username,
       verified: data?.findUserById.me.verified,
@@ -90,6 +114,21 @@ const AllPostItem = ({
       email: data?.findUserById.me.email,
       website: data?.findUserById.website,
     })
+  }, [
+    data?.findUserById.description,
+    data?.findUserById.followers,
+    data?.findUserById.following,
+    data?.findUserById.location,
+    data?.findUserById.me.email,
+    data?.findUserById.me.name,
+    data?.findUserById.me.photo,
+    data?.findUserById.me.user,
+    data?.findUserById.me.username,
+    data?.findUserById.me.verified,
+    data?.findUserById.website,
+    navigation,
+    userDominantColor?.getColors,
+  ])
 
   const dominantColorString = dataDominantColor?.getColors
     ? `rgb(${dataDominantColor?.getColors})`
@@ -155,9 +194,9 @@ const AllPostItem = ({
                 {title} - {author}
               </Text>
               <Text style={[styles.text, { color: colors.text }]}>
-                {description.join('\n').length < 200
+                {description.join('\n').length < 120
                   ? description.join('\n')
-                  : `${description.join('\n').toString().substring(0, 200)}...`}
+                  : `${description.join('\n').toString().substring(0, 120)}...`}
               </Text>
             </View>
             <TouchableRipple
@@ -189,7 +228,7 @@ const AllPostItem = ({
   )
 }
 
-export default memo(AllPostItem)
+export default AllPostItem
 
 const styles = StyleSheet.create({
   postContainer: {

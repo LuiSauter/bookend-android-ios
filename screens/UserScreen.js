@@ -16,7 +16,7 @@ import AllPostItem from '../components/Post/AllPostItem'
 import { useAuth } from '../hooks/useAuth'
 import HeaderProfile from '../components/Profile/HeaderProfile'
 
-const INITIAL_PAGE = 10
+const INITIAL_PAGE = 5
 
 const renderItem = ({ item }) => {
   return (
@@ -153,7 +153,7 @@ const UserScreen = ({ route }) => {
         keyExtractor={keyExtractor}
         ListFooterComponent={renderLoader}
         onEndReached={loadMoreItem}
-        onEndReachedThreshold={0}
+        onEndReachedThreshold={0.5}
         refreshControl={
           <RefreshControl
             progressBackgroundColor={colors.primary}
