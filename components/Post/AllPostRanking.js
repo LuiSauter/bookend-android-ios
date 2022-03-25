@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, memo } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { RefreshControl, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
@@ -116,7 +116,7 @@ const AllPostRanking = () => {
   )
 }
 
-export default memo(AllPostRanking)
+export default AllPostRanking
 
 const styles = StyleSheet.create({
   column: {
