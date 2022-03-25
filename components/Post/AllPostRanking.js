@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, memo } from 'react'
 import { RefreshControl, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
@@ -6,7 +6,7 @@ import { useTheme } from '@react-navigation/native'
 import { ALL_POSTS_COUNT, ALL_POST_RANKING } from '../../post/graphql-queries'
 import AllPostRankItem from './AllPostRankItem'
 
-const INITIAL_PAGE = 10
+const INITIAL_PAGE = 8
 const ITEM_HEIGHT = 270
 
 const renderItem = ({ item }) => (
@@ -94,7 +94,7 @@ const AllPostRanking = () => {
       onEndReached={loadMoreItem}
       getItemLayout={getItemLayout}
       initialNumToRender={INITIAL_PAGE}
-      onEndReachedThreshold={0}
+      onEndReachedThreshold={1.5}
       removeClippedSubviews={true}
       numColumns={2}
       columnWrapperStyle={styles.column}
@@ -116,12 +116,11 @@ const AllPostRanking = () => {
   )
 }
 
-export default AllPostRanking
+export default memo(AllPostRanking)
 
 const styles = StyleSheet.create({
   column: {
     display: 'flex',
     justifyContent: 'space-evenly',
-    // paddingHorizontal: 6,
   },
 })

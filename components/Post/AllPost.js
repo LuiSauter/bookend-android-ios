@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import { FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from 'react-native-paper'
 
 import { ALL_POSTS, ALL_POSTS_COUNT } from '../../post/graphql-queries'
 import AllPostItem from './AllPostItem'
 
-const INITIAL_PAGE = 12
+const INITIAL_PAGE = 8
 const ITEM_HEIGHT = 600
 
 const renderItem = ({ item }) => {
@@ -115,7 +115,7 @@ const AllPost = () => {
       onEndReached={loadMoreItem}
       getItemLayout={getItemLayout}
       initialNumToRender={INITIAL_PAGE}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={1.5}
       removeClippedSubviews={true}
       refreshControl={
         <RefreshControl
