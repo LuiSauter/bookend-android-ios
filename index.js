@@ -12,14 +12,8 @@ import {
 import {
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperDefaultTheme,
-  IconButton,
-  Modal,
-  Portal,
   Provider as PaperProvider,
-  TouchableRipple,
-  useTheme,
 } from 'react-native-paper'
-// import 'react-native-gesture-handler'
 
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Ionicons from 'react-native-vector-icons/Ionicons'
