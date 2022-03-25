@@ -17,7 +17,7 @@ const BookScreen = () => {
         barStyle={dark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.primary}
       />
-      {/* <AllPostRanking /> */}
+      <AllPostRanking />
     </SafeAreaView>
   )
 }

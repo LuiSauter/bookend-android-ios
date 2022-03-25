@@ -12,13 +12,12 @@ import SearchScreen from '../screens/SearchScreen'
 import HomeScreen from '../screens/HomeScreen'
 
 const Tab = createBottomTabNavigator()
-const isAuth = true
+const isAuth = false
 
 const TabNavigator = () => {
   const { colors } = useTheme()
   const { googleAuth } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
-  // const { showModal, toggleModal } = useToggle()
   const [showModal, setShowModal] = useState(false)
 
   const toggleModal = () => setShowModal(!showModal)
@@ -37,7 +36,6 @@ const TabNavigator = () => {
     backgroundColor: colors.primary,
     padding: 30,
     borderRadius: 20,
-    // width: '90%',
     marginHorizontal: '5%',
   }
 
@@ -45,7 +43,7 @@ const TabNavigator = () => {
     <>
       <Portal>
         <Modal visible={showModal} onDismiss={toggleModal} contentContainerStyle={containerStyle}>
-          <Text style={{ fontSize: 18 }}>Example Modal. Click outside this area to dismiss.</Text>
+          <Text style={{ fontSize: 18 }}>Iniciar sesion</Text>
           {!isAuth ? (
             <TouchableRipple
               onPress={toggleModal}
@@ -55,7 +53,7 @@ const TabNavigator = () => {
             >
               <View style={[styles.button, { backgroundColor: colors.colorThirdBlue }]}>
                 <IconButton icon='logo-google' style={{ transform: [{ scale: 1.1 }] }} />
-                <Text style={styles.textLabel}>Iniciar sesión</Text>
+                <Text style={styles.textLabel}>Con google</Text>
               </View>
             </TouchableRipple>
           ) : (
