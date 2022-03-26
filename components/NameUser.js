@@ -9,7 +9,10 @@ const NameUser = ({ name, verified, fontSize, color = '' }) => {
       <Text
         style={[
           styles.userTextName,
-          { fontSize: fontSize, color: color !== '' ? colors.white : colors.text },
+          {
+            fontSize: fontSize,
+            color: color !== '' ? colors.white : colors.text,
+          },
         ]}
       >
         {name}

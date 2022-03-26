@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from 'react-native-paper'
@@ -35,12 +35,14 @@ const getItemLayout = (data, index) => ({
 
 const keyExtractor = item => item.id.toString()
 
-const AllPost = () => {
+const AllPost = ({ scrollTop, scrollToTop }) => {
   const { colors } = useTheme()
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(INITIAL_PAGE)
   const [refreshing, setRefreshing] = useState(false)
-  const [getAllPost, { data, refetch, loading }] = useLazyQuery(ALL_POSTS)
+  const ref = useRef(null)
+
+  const [getAllPost, { data, refetch }] = useLazyQuery(ALL_POSTS)
   const { data: allPostsCount } = useQuery(ALL_POSTS_COUNT)
 
   useEffect(() => {
@@ -64,6 +66,19 @@ const AllPost = () => {
       cleanup = false
     }
   }, [currentPage, refetch])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      if (scrollTop) {
+        ref.current?.scrollToOffset({ offset: -100 })
+        scrollToTop()
+      }
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [scrollToTop, scrollTop])
 
   const renderLoader = () => {
     return (
@@ -102,6 +117,7 @@ const AllPost = () => {
       data={data?.allPosts}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
+      ref={ref}
       // ListHeaderComponent={() =>
       //   loading && (
       //     <ActivityIndicator

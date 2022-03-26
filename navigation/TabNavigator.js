@@ -19,6 +19,7 @@ const TabNavigator = () => {
   const { googleAuth } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
   const [showModal, setShowModal] = useState(false)
+  const [scrollTop, setScrollTop] = useState(false)
 
   const toggleModal = () => setShowModal(!showModal)
 
@@ -31,6 +32,8 @@ const TabNavigator = () => {
       cleanup = false
     }
   }, [getUser, googleAuth.email, googleAuth.status])
+
+  const scrollToTop = () => setScrollTop(!scrollTop)
 
   const containerStyle = {
     backgroundColor: colors.primary,
@@ -99,19 +102,19 @@ const TabNavigator = () => {
           },
           headerTitleStyle: { color: colors.text },
           headerTintColor: colors.text,
-          tabBarButton: props => (
-            <Pressable
-              {...props}
-              android_ripple={{
-                color: colors.colorUnderlay,
-                borderless: true,
-                radius: 80,
-              }}
-              style={({ pressed }) => [
-                { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-              ]}
-            />
-          ),
+          // tabBarButton: props => (
+          //   <Pressable
+          //     {...props}
+          //     android_ripple={{
+          //       color: colors.colorUnderlay,
+          //       borderless: true,
+          //       radius: 80,
+          //     }}
+          //     style={({ pressed }) => [
+          //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+          //     ]}
+          //   />
+          // ),
           headerLeft: () => (
             <View style={{ marginLeft: 4 }}>
               <IconButton
@@ -154,14 +157,29 @@ const TabNavigator = () => {
       >
         <Tab.Screen
           name='HomeScreen'
-          component={HomeScreen}
+          // component={HomeScreen}
           options={() => ({
             title: 'Inicio',
             tabBarIcon: ({ color, focused }) => (
               <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} size={22} />
             ),
+            tabBarButton: props => (
+              <Pressable
+                {...props}
+                android_ripple={{
+                  color: colors.colorUnderlay,
+                  borderless: true,
+                  radius: 80,
+                }}
+                style={({ pressed }) => [
+                  { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+                ]}
+              />
+            ),
           })}
-        />
+        >
+          {props => <HomeScreen {...props} scrollTop={scrollTop} scrollToTop={scrollToTop} />}
+        </Tab.Screen>
         <Tab.Screen
           name='BookScreen'
           component={BookScreen}

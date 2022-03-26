@@ -180,10 +180,16 @@ const AllPostItem = ({
                   <NameUser
                     name={data?.findUserById.me.name}
                     verified={data?.findUserById.me.verified}
-                    fontSize={16}
+                    fontSize={17}
                   />
                   <Text style={[styles.userTextUsername, { color: colors.textGray }]}>
-                    @{data?.findUserById.me.username} · {timeago}
+                    <Text style={{}}>
+                      @
+                      {data?.findUserById.me.username.length < 7
+                        ? data?.findUserById.me.username
+                        : `${data?.findUserById.me.username.toString().substring(0, 7)}...`}
+                    </Text>{' '}
+                    · {timeago}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -238,7 +244,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   userImgContainer: {
-    marginVertical: 16,
+    marginVertical: 12,
     marginRight: 12,
     width: 47,
   },
@@ -261,11 +267,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   userTextUsername: {
-    fontSize: 14.5,
+    fontSize: 16,
   },
   postItem: {
     flex: 1,
-    marginTop: 15.5,
+    marginTop: 8,
   },
   postItemDescription: {
     flex: 1,

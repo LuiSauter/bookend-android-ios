@@ -5,7 +5,7 @@ import { useTheme } from 'react-native-paper'
 import AllPost from '../components/Post/AllPost'
 // import { useToggle } from '../hooks/useToggle'
 
-const HomeScreen = () => {
+const HomeScreen = ({ scrollTop, scrollToTop }) => {
   const { dark, colors } = useTheme()
   // const [isAuth, setAuth] = useState(false)
   // const { googleAuth } = useAuth()
@@ -24,7 +24,7 @@ const HomeScreen = () => {
         barStyle={dark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.primary}
       />
-      <AllPost />
+      <AllPost scrollTop={scrollTop} scrollToTop={scrollToTop} />
     </SafeAreaView>
   )
 }
