@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Pressable, View, Image, Text } from 'react-native'
+import { StyleSheet, Pressable, View, Image, Text, TouchableOpacity } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-native-paper'
 import { useLazyQuery } from '@apollo/client'
@@ -10,12 +10,15 @@ import { FIND_USER } from '../user/graphql-queries'
 import BookScreen from '../screens/BookScreen'
 import SearchScreen from '../screens/SearchScreen'
 import HomeScreen from '../screens/HomeScreen'
+import Search from '../components/Search/Search'
+import { useToggle } from '../hooks/useToggle'
 
 const Tab = createBottomTabNavigator()
 const isAuth = false
 
 const TabNavigator = () => {
   const { colors } = useTheme()
+  const { handleChangeWord, word } = useToggle()
   const { googleAuth } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
   const [showModal, setShowModal] = useState(false)
@@ -90,31 +93,31 @@ const TabNavigator = () => {
           tabBarInactiveTintColor: colors.text,
           tabBarStyle: {
             backgroundColor: colors.primary,
-            borderColor: `${colors.border}22`,
             borderTopWidth: 1,
+            borderTopColor: colors.border,
           },
           headerShown: true,
           tabBarShowLabel: false,
           headerStyle: {
             backgroundColor: colors.primary,
-            borderColor: `${colors.border}22`,
+            borderBottomColor: colors.border,
             borderBottomWidth: 1,
           },
           headerTitleStyle: { color: colors.text },
           headerTintColor: colors.text,
-          // tabBarButton: props => (
-          //   <Pressable
-          //     {...props}
-          //     android_ripple={{
-          //       color: colors.colorUnderlay,
-          //       borderless: true,
-          //       radius: 80,
-          //     }}
-          //     style={({ pressed }) => [
-          //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-          //     ]}
-          //   />
-          // ),
+          tabBarButton: props => (
+            <Pressable
+              {...props}
+              android_ripple={{
+                color: colors.colorUnderlay,
+                borderless: true,
+                radius: 80,
+              }}
+              style={({ pressed }) => [
+                { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+              ]}
+            />
+          ),
           headerLeft: () => (
             <View style={{ marginLeft: 4 }}>
               <IconButton
@@ -158,24 +161,62 @@ const TabNavigator = () => {
         <Tab.Screen
           name='HomeScreen'
           // component={HomeScreen}
-          options={() => ({
+          options={({ navigation, route }) => ({
             title: 'Inicio',
+            headerTitle: ({ tintColor }) => (
+              <TouchableOpacity activeOpacity={0.9} onPress={scrollToTop}>
+                <Text style={{ fontSize: 20, color: tintColor }}>Inicio</Text>
+              </TouchableOpacity>
+            ),
             tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} size={22} />
+              <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} />
             ),
-            tabBarButton: props => (
-              <Pressable
-                {...props}
-                android_ripple={{
-                  color: colors.colorUnderlay,
-                  borderless: true,
-                  radius: 80,
-                }}
-                style={({ pressed }) => [
-                  { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-                ]}
-              />
-            ),
+            // tabBarIcon: ({color, focused}) => (
+            //   <Pressable
+            //     android_ripple={{
+            //       color: colors.colorUnderlay,
+            //       borderless: true,
+            //       radius: 80,
+            //     }}
+            //     style={({ pressed }) => [
+            //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+            //     ]}
+            //     onPress={scrollToTop}
+            //   >
+            //     <IconButton
+            //       style={{ backgroundColor: 'red' }}
+            //       icon={focused ? 'ios-home' : 'home-outline'}
+            //       color={color}
+            //     />
+            //   </Pressable>
+            // ),
+            // tabBarIcon: ({ color, focused }) => (
+            // <IconButton
+            //   style={{ width: '100%', height: '100%', borderRadius: 0 }}
+            //   icon={focused ? 'ios-home' : 'home-outline'}
+            //   color={color}
+            //   // size={22}
+            //   borderless={true}
+            //   rippleColor={colors.colorUnderlay}
+            //   onPress={() => {
+            //     navigation.navigate('HomeScreen')
+            //     scrollToTop()
+            //   }}
+            // />
+            // ),
+            // tabBarButton: props => (
+            //   <Pressable
+            //     {...props}
+            //     android_ripple={{
+            //       color: colors.colorUnderlay,
+            //       borderless: true,
+            //       radius: 80,
+            //     }}
+            //     style={({ pressed }) => [
+            //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+            //     ]}
+            //   />
+            // ),
           })}
         >
           {props => <HomeScreen {...props} scrollTop={scrollTop} scrollToTop={scrollToTop} />}
@@ -186,7 +227,7 @@ const TabNavigator = () => {
           options={{
             title: 'Books',
             tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'book' : 'book-outline'} color={color} size={20} />
+              <IconButton icon={focused ? 'book' : 'book-outline'} color={color} />
             ),
           }}
         />
@@ -195,12 +236,16 @@ const TabNavigator = () => {
           component={SearchScreen}
           options={{
             title: 'Search',
-            // headerTitle: () => (
-            //   <Search onChangeText={handleChangeWord} value={word} placeholder='buscar en bookend' />
-            // ),
+            headerTitle: () => (
+              <Search
+                onChangeText={handleChangeWord}
+                value={word}
+                placeholder='buscar en bookend'
+              />
+            ),
             headerTitleAlign: 'center',
             tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'search' : 'search-outline'} color={color} size={20} />
+              <IconButton icon={focused ? 'search' : 'search-outline'} color={color} />
             ),
           }}
         />

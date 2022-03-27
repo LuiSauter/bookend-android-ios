@@ -14,7 +14,6 @@ import ImageView from 'react-native-image-viewing'
 
 import { FINDONE_POST, GET_DOMINANT_COLOR } from '../post/graphql-queries'
 import NameUser from '../components/NameUser'
-// import MultipleButtons from '../components/MultipleButtons'
 import BtnOptions from '../components/Button/BtnOptions'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MultipleButtons from '../components/MultipleButtons'
