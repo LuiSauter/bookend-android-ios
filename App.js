@@ -8,6 +8,7 @@ import DetailScreen from './screens/DetailScreen'
 import UserScreen from './screens/UserScreen'
 import NameUser from './components/NameUser'
 import DisplayScreen from './screens/setting/DisplayScreen'
+import PdfScreen from './screens/PdfScreen'
 
 const Stack = createNativeStackNavigator()
 
@@ -68,6 +69,17 @@ const App = () => {
               color='white'
             />
           ),
+        })}
+      />
+      <Stack.Screen
+        name='PdfScreen'
+        component={PdfScreen}
+        options={() => ({
+          title: '',
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.textGray,
+          headerShown: true,
+          headerTransparent: true,
         })}
       />
     </Stack.Navigator>
