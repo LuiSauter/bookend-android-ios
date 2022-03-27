@@ -185,9 +185,9 @@ const AllPostItem = ({
                   <Text style={[styles.userTextUsername, { color: colors.textGray }]}>
                     <Text style={{}}>
                       @
-                      {data?.findUserById.me.username.length < 7
+                      {data?.findUserById.me.username.length < 6
                         ? data?.findUserById.me.username
-                        : `${data?.findUserById.me.username.toString().substring(0, 7)}...`}
+                        : `${data?.findUserById.me.username.toString().substring(0, 6)}...`}
                     </Text>{' '}
                     · {timeago}
                   </Text>

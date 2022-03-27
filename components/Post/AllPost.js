@@ -42,7 +42,7 @@ const AllPost = ({ scrollTop, scrollToTop }) => {
   const [refreshing, setRefreshing] = useState(false)
   const ref = useRef(null)
 
-  const [getAllPost, { data, refetch }] = useLazyQuery(ALL_POSTS)
+  const [getAllPost, { data, refetch, loading }] = useLazyQuery(ALL_POSTS)
   const { data: allPostsCount } = useQuery(ALL_POSTS_COUNT)
 
   useEffect(() => {
@@ -112,21 +112,12 @@ const AllPost = ({ scrollTop, scrollToTop }) => {
     setRefreshing(false)
   }
 
-  return (
+  return data?.allPosts ? (
     <FlatList
       data={data?.allPosts}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ref={ref}
-      // ListHeaderComponent={() =>
-      //   loading && (
-      //     <ActivityIndicator
-      //       style={{ flex: 1, paddingTop: 24, paddingBottom: 16 }}
-      //       color={colors.colorThirdBlue}
-      //       size='large'
-      //     />
-      //   )
-      // }
       ListFooterComponent={renderLoader}
       onEndReached={loadMoreItem}
       getItemLayout={getItemLayout}
@@ -141,6 +132,18 @@ const AllPost = ({ scrollTop, scrollToTop }) => {
           onRefresh={onRefresh}
         />
       }
+    />
+  ) : (
+    <ActivityIndicator
+      style={{
+        paddingTop: 24,
+        paddingBottom: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+      }}
+      color={colors.colorThirdBlue}
+      size='large'
     />
   )
 }
