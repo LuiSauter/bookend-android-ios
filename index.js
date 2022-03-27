@@ -89,13 +89,15 @@ export default function Main() {
   const colorScheme = Appearance.getColorScheme()
   const [isThemeDark, setIsThemeDark] = useState(colorScheme === 'dark')
   const [showModal, setShow] = useState(false)
+  const [word, setWord] = useState('')
 
   const toggleTheme = useCallback(() => setIsThemeDark(!isThemeDark), [isThemeDark])
   const toggleModal = useCallback(() => setShow(!showModal), [showModal])
+  const handleChangeWord = useCallback(text => setWord(text), [])
 
   const preferences = useMemo(() => {
-    return { toggleTheme, isThemeDark, toggleModal, showModal }
-  }, [toggleTheme, isThemeDark, toggleModal, showModal])
+    return { toggleTheme, isThemeDark, toggleModal, showModal, handleChangeWord, word }
+  }, [toggleTheme, isThemeDark, toggleModal, showModal, handleChangeWord, word])
 
   return (
     <ApolloProvider client={client}>
