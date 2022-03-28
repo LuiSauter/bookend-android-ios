@@ -48,7 +48,6 @@ const AllPost = ({ scrollTop, scrollToTop }) => {
   useEffect(() => {
     let cleanup = true
     if (cleanup) {
-      // setCurrentPage(INITIAL_PAGE)
       getAllPost({ variables: { pageSize: INITIAL_PAGE, skipValue: 0 } })
     }
     return () => (cleanup = false)

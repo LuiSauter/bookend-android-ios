@@ -193,7 +193,11 @@ const AllPostItem = ({
                   </Text>
                 </View>
               </TouchableOpacity>
-              <BtnOptions username={data?.findUserById.me.username} user={user} />
+              <BtnOptions
+                username={data?.findUserById.me.username}
+                emailOfUser={data?.findUserById.me.email}
+                user={user}
+              />
             </View>
             <View style={styles.postItemDescription}>
               <Text style={[styles.postItemTitle, { color: colors.colorThirdBlue }]}>

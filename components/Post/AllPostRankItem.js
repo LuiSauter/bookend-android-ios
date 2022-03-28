@@ -84,12 +84,9 @@ const AllPostRankItem = ({
 export default memo(AllPostRankItem)
 
 const styles = StyleSheet.create({
-  container: {
-    // width: '50%',
-  },
+  container: {},
   image: {
     width: '100%',
-    // height: 20,
     resizeMode: 'cover',
     aspectRatio: 9 / 13,
     borderRadius: 16,

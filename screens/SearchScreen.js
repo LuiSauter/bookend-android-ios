@@ -18,7 +18,6 @@ import { SEARCH_POST_AUTHOR_USER } from '../post/graphql-queries'
 import ResultPost from '../components/Search/ResultPost'
 import ResultUser from '../components/Search/ResultUser'
 import AllUsers from '../components/AllUsers'
-import Authentication from '../components/Authentication'
 
 const renderItem = ({ item }) => (
   <ResultPost
@@ -88,8 +87,7 @@ const SearchScreen = () => {
         barStyle={dark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.primary}
       />
-      <Authentication />
-      {/* <View style={[styles.btnFilter, { borderColor: colors.border }]}>
+      <View style={[styles.btnFilter, { borderColor: colors.border }]}>
         <TouchableOpacity
           onPress={() => setFilter({ book: true, author: false, user: false })}
           activeOpacity={0.8}
@@ -171,7 +169,7 @@ const SearchScreen = () => {
         />
       ) : (
         <AllUsers />
-      )} */}
+      )}
     </SafeAreaView>
   )
 }
