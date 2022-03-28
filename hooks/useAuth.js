@@ -1,16 +1,15 @@
-// import { useContext } from 'react'
-// import { AuthContext } from '../context/authContext'
-
-export const INITIAL_STATE = {
-  email: '',
-  name: '',
-  image: '',
-  status: 'unauthenticated',
-  token: '',
-}
+import { useContext } from 'react'
+import { AuthContext } from '../context/AuthContext'
 
 export const useAuth = () => {
-  // const { googleAuth, handleGoogleAuthentication } = useContext(AuthContext)
-  const handleGoogleAuthentication = () => console.log('xd')
-  return { googleAuth: INITIAL_STATE, handleGoogleAuthentication }
+  const { googleAuth, handleGoogleAuthentication, signInWithGoogle, signOut, loading } =
+    useContext(AuthContext)
+
+  return {
+    googleAuth,
+    handleGoogleAuthentication,
+    signInWithGoogle,
+    signOut,
+    loading,
+  }
 }
