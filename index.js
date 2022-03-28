@@ -40,7 +40,6 @@ const light = {
     white: '#fff',
     text: colorsLight.text,
     border: colorsLight.border,
-    backdrop: colorsLight.colorUnderlay,
   },
 }
 const dark = {
@@ -62,7 +61,6 @@ const dark = {
     white: '#fff',
     text: colors.textWhite,
     border: colors.border,
-    backdrop: colors.colorUnderlay,
   },
 }
 
