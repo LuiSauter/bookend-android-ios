@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Pressable, View, Image, Text, TouchableOpacity } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-native-paper'
+import { IconButton, TouchableRipple, useTheme } from 'react-native-paper'
 import { useLazyQuery } from '@apollo/client'
 
 import userDefault from '../assets/img/default-user.png'
@@ -14,243 +14,158 @@ import Search from '../components/Search/Search'
 import { useToggle } from '../hooks/useToggle'
 
 const Tab = createBottomTabNavigator()
-const isAuth = false
 
 const TabNavigator = () => {
   const { colors } = useTheme()
-  const { handleChangeWord, word } = useToggle()
-  const { googleAuth } = useAuth()
+  const { handleChangeWord, word, toggleModal } = useToggle()
+  const { googleAuth, handleGoogleAuthentication } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
-  const [showModal, setShowModal] = useState(false)
   const [scrollTop, setScrollTop] = useState(false)
 
-  const toggleModal = () => setShowModal(!showModal)
+  const { email, image, status, name } = googleAuth
 
   useEffect(() => {
     let cleanup = true
     if (cleanup) {
-      googleAuth.status === 'authenticated' && getUser({ variables: { email: googleAuth.email } })
+      status === 'authenticated' && getUser({ variables: { email: email } })
     }
     return () => {
       cleanup = false
     }
-  }, [getUser, googleAuth.email, googleAuth.status])
+  }, [getUser, email, status])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      status === 'authenticated' &&
+        data?.findUser &&
+        handleGoogleAuthentication({
+          email: email,
+          name: data?.findUser ? data?.findUser.me.name : name,
+          image: data?.findUser ? data?.findUser.me.photo : image,
+          status: status,
+        })
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [data?.findUser, email, handleGoogleAuthentication, image, name, status])
 
   const scrollToTop = () => setScrollTop(!scrollTop)
 
-  const containerStyle = {
-    backgroundColor: colors.primary,
-    padding: 30,
-    borderRadius: 20,
-    marginHorizontal: '5%',
-  }
-
   return (
-    <>
-      <Portal>
-        <Modal visible={showModal} onDismiss={toggleModal} contentContainerStyle={containerStyle}>
-          <Text style={{ fontSize: 18 }}>Iniciar sesion</Text>
-          {!isAuth ? (
-            <TouchableRipple
-              onPress={toggleModal}
-              rippleColor={colors.colorUnderlay}
+    <Tab.Navigator
+      screenOptions={({ navigation }) => ({
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.text,
+        tabBarStyle: {
+          backgroundColor: colors.primary,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+        },
+        headerShown: true,
+        tabBarShowLabel: false,
+        headerStyle: {
+          backgroundColor: colors.primary,
+          borderBottomColor: colors.border,
+          borderBottomWidth: 1,
+        },
+        headerTitleStyle: { color: colors.text },
+        headerTintColor: colors.text,
+        tabBarButton: props => (
+          <Pressable
+            {...props}
+            android_ripple={{
+              color: colors.colorUnderlay,
+              borderless: true,
+              radius: 80,
+            }}
+            style={({ pressed }) => [
+              { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
+            ]}
+          />
+        ),
+        headerLeft: () => (
+          <View style={{ marginLeft: 4 }}>
+            <IconButton
+              icon='md-settings-outline'
+              color={colors.text}
               borderless={true}
-              style={styles.Touchable}
-            >
-              <View style={[styles.button, { backgroundColor: colors.colorThirdBlue }]}>
-                <IconButton icon='logo-google' style={{ transform: [{ scale: 1.1 }] }} />
-                <Text style={styles.textLabel}>Con google</Text>
-              </View>
-            </TouchableRipple>
-          ) : (
-            <TouchableRipple
-              onPress={toggleModal}
-              rippleColor={colors.colorUnderlay}
-              borderless={true}
-              style={styles.Touchable}
-            >
-              <View style={[styles.button, { backgroundColor: colors.colorFourthRed }]}>
-                <IconButton icon='log-out-outline' style={{ transform: [{ scale: 1.2 }] }} />
-                <Text style={styles.textLabel}>Cerrar sesión</Text>
-              </View>
-            </TouchableRipple>
-          )}
-          <TouchableRipple
-            onPress={toggleModal}
-            rippleColor={colors.colorUnderlay}
-            borderless={true}
-            style={styles.Touchable}
-          >
-            <View style={[styles.button, { backgroundColor: colors.textGray }]}>
-              <Text style={[styles.textLabel, { paddingVertical: 10 }]}>Cancelar</Text>
-            </View>
-          </TouchableRipple>
-        </Modal>
-      </Portal>
-      <Tab.Navigator
-        screenOptions={({ navigation }) => ({
-          tabBarActiveTintColor: colors.text,
-          tabBarInactiveTintColor: colors.text,
-          tabBarStyle: {
-            backgroundColor: colors.primary,
-            borderTopWidth: 1,
-            borderTopColor: colors.border,
-          },
-          headerShown: true,
-          tabBarShowLabel: false,
-          headerStyle: {
-            backgroundColor: colors.primary,
-            borderBottomColor: colors.border,
-            borderBottomWidth: 1,
-          },
-          headerTitleStyle: { color: colors.text },
-          headerTintColor: colors.text,
-          tabBarButton: props => (
-            <Pressable
-              {...props}
-              android_ripple={{
-                color: colors.colorUnderlay,
-                borderless: true,
-                radius: 80,
-              }}
-              style={({ pressed }) => [
-                { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-              ]}
+              size={24}
+              rippleColor={colors.border}
+              style={{ paddingTop: 1 }}
+              onPress={() => navigation.navigate('SettingScreen')}
             />
-          ),
-          headerLeft: () => (
-            <View style={{ marginLeft: 4 }}>
-              <IconButton
-                icon='md-settings-outline'
-                color={colors.text}
-                borderless={true}
-                size={24}
-                rippleColor={colors.border}
-                style={{ paddingTop: 1 }}
-                onPress={() => navigation.navigate('SettingScreen')}
+          </View>
+        ),
+        headerRight: props => (
+          <TouchableRipple
+            rippleColor={colors.colorUnderlay}
+            style={styles.logoContainer}
+            borderless={true}
+            onPress={() => toggleModal()}
+            {...props}
+          >
+            {status === 'unauthenticated' ? (
+              <Image
+                style={[styles.bookendLogo, { backgroundColor: colors.textWhite }]}
+                source={userDefault}
               />
-            </View>
+            ) : (
+              <Image
+                style={styles.bookendLogo}
+                source={{ uri: data?.findUser ? data?.findUser.me.photo : image }}
+              />
+            )}
+          </TouchableRipple>
+        ),
+      })}
+      activeColor={colors.colorThirdBlue}
+      tabBarActiveTintColor={colors.colorThirdBlue}
+      tabBarInactiveTintColor={colors.text}
+      barStyle={{ backgroundColor: colors.primary }}
+    >
+      <Tab.Screen
+        name='HomeScreen'
+        options={() => ({
+          title: 'Inicio',
+          headerTitle: ({ tintColor }) => (
+            <TouchableOpacity activeOpacity={0.9} onPress={scrollToTop}>
+              <Text style={{ fontSize: 20, color: tintColor }}>Inicio</Text>
+            </TouchableOpacity>
           ),
-          headerRight: props => (
-            <TouchableRipple
-              rippleColor={colors.colorUnderlay}
-              style={styles.logoContainer}
-              borderless={true}
-              onPress={() => toggleModal()}
-              {...props}
-            >
-              {googleAuth.status === 'unauthenticated' ? (
-                <Image
-                  style={[styles.bookendLogo, { backgroundColor: colors.textWhite }]}
-                  source={userDefault}
-                />
-              ) : (
-                <Image
-                  style={styles.bookendLogo}
-                  source={{ uri: data?.findUser ? data?.findUser.me.photo : googleAuth.image }}
-                />
-              )}
-            </TouchableRipple>
+          tabBarIcon: ({ color, focused }) => (
+            <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} />
           ),
         })}
-        activeColor={colors.colorThirdBlue}
-        tabBarActiveTintColor={colors.colorThirdBlue}
-        tabBarInactiveTintColor={colors.text}
-        barStyle={{ backgroundColor: colors.primary }}
       >
-        <Tab.Screen
-          name='HomeScreen'
-          // component={HomeScreen}
-          options={({ navigation, route }) => ({
-            title: 'Inicio',
-            headerTitle: ({ tintColor }) => (
-              <TouchableOpacity activeOpacity={0.9} onPress={scrollToTop}>
-                <Text style={{ fontSize: 20, color: tintColor }}>Inicio</Text>
-              </TouchableOpacity>
-            ),
-            tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'ios-home' : 'home-outline'} color={color} />
-            ),
-            // tabBarIcon: ({color, focused}) => (
-            //   <Pressable
-            //     android_ripple={{
-            //       color: colors.colorUnderlay,
-            //       borderless: true,
-            //       radius: 80,
-            //     }}
-            //     style={({ pressed }) => [
-            //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-            //     ]}
-            //     onPress={scrollToTop}
-            //   >
-            //     <IconButton
-            //       style={{ backgroundColor: 'red' }}
-            //       icon={focused ? 'ios-home' : 'home-outline'}
-            //       color={color}
-            //     />
-            //   </Pressable>
-            // ),
-            // tabBarIcon: ({ color, focused }) => (
-            // <IconButton
-            //   style={{ width: '100%', height: '100%', borderRadius: 0 }}
-            //   icon={focused ? 'ios-home' : 'home-outline'}
-            //   color={color}
-            //   // size={22}
-            //   borderless={true}
-            //   rippleColor={colors.colorUnderlay}
-            //   onPress={() => {
-            //     navigation.navigate('HomeScreen')
-            //     scrollToTop()
-            //   }}
-            // />
-            // ),
-            // tabBarButton: props => (
-            //   <Pressable
-            //     {...props}
-            //     android_ripple={{
-            //       color: colors.colorUnderlay,
-            //       borderless: true,
-            //       radius: 80,
-            //     }}
-            //     style={({ pressed }) => [
-            //       { backgroundColor: pressed ? 'transparent' : 'transparent', flex: 1 },
-            //     ]}
-            //   />
-            // ),
-          })}
-        >
-          {props => <HomeScreen {...props} scrollTop={scrollTop} scrollToTop={scrollToTop} />}
-        </Tab.Screen>
-        <Tab.Screen
-          name='BookScreen'
-          component={BookScreen}
-          options={{
-            title: 'Books',
-            tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'book' : 'book-outline'} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name='SearchScreen'
-          component={SearchScreen}
-          options={{
-            title: 'Search',
-            headerTitle: () => (
-              <Search
-                onChangeText={handleChangeWord}
-                value={word}
-                placeholder='buscar en bookend'
-              />
-            ),
-            headerTitleAlign: 'center',
-            tabBarIcon: ({ color, focused }) => (
-              <IconButton icon={focused ? 'search' : 'search-outline'} color={color} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </>
+        {props => <HomeScreen {...props} scrollTop={scrollTop} scrollToTop={scrollToTop} />}
+      </Tab.Screen>
+      <Tab.Screen
+        name='BookScreen'
+        component={BookScreen}
+        options={{
+          title: 'Books',
+          tabBarIcon: ({ color, focused }) => (
+            <IconButton icon={focused ? 'book' : 'book-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name='SearchScreen'
+        component={SearchScreen}
+        options={{
+          title: 'Search',
+          headerTitle: () => (
+            <Search onChangeText={handleChangeWord} value={word} placeholder='buscar en bookend' />
+          ),
+          headerTitleAlign: 'center',
+          tabBarIcon: ({ color, focused }) => (
+            <IconButton icon={focused ? 'search' : 'search-outline'} color={color} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   )
 }
 
@@ -265,20 +180,5 @@ const styles = StyleSheet.create({
   logoContainer: {
     borderRadius: 50,
     marginRight: 20,
-  },
-  button: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textLabel: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  Touchable: {
-    borderRadius: 24,
-    marginTop: 18,
   },
 })

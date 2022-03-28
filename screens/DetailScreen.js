@@ -113,7 +113,7 @@ const DetailScreen = ({ route, navigation }) => {
             <NameUser name={name} verified={verified} fontSize={16} />
             <Text style={[styles.userTextUsername, { color: colors.text }]}>@{username}</Text>
           </View>
-          <BtnOptions username={username} user={user} />
+          <BtnOptions username={username} user={user} emailOfUser={email} />
         </View>
         <View style={styles.postItemDescription}>
           <Text style={[styles.postItemTitle, { color: colors.colorThirdBlue }]}>
