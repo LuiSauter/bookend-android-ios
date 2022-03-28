@@ -4,8 +4,6 @@ import { useNavigation, useTheme } from '@react-navigation/native'
 import { IconButton } from 'react-native-paper'
 import BtnLike from './Button/BtnLike'
 
-// import BtnLike from './Button/BtnLike'
-
 const MultipleButtons = ({ id, bookUrl, title }) => {
   const { colors } = useTheme()
   const navigation = useNavigation()
@@ -50,7 +48,6 @@ const MultipleButtons = ({ id, bookUrl, title }) => {
           iconStyle={{ marginRight: 0 }}
           underlayColor='transparent'
         />
-        {/* <Text style={[styles.text, { color: colors.textGray, marginLeft: 5 }]}>0</Text> */}
       </Pressable>
       <BtnLike id={id} />
       <Pressable

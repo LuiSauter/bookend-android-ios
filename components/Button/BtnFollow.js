@@ -3,48 +3,49 @@ import { Text, TouchableOpacity } from 'react-native'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
 
-import { useAuth } from '../../hooks/useAuth'
 import { FOLLOW_USER, UNFOLLOW_USER } from '../../user/graphql-mutation'
 import { FIND_USER } from '../../user/graphql-queries'
 import { useToggle } from '../../hooks/useToggle'
+import { useAuth } from '../../hooks/useAuth'
 
 const BtnFollow = ({ user }) => {
-  const { toggleModal } = useToggle()
   const { googleAuth } = useAuth()
+  const { toggleModal } = useToggle()
   const { colors } = useTheme()
-  const { status, email } = googleAuth
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(FIND_USER)
   const [getFollow] = useMutation(FOLLOW_USER, {
-    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
+    refetchQueries: [{ query: FIND_USER, variables: { email: googleAuth.email } }],
   })
 
   const [getUnFollow] = useMutation(UNFOLLOW_USER, {
-    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
+    refetchQueries: [{ query: FIND_USER, variables: { email: googleAuth.email } }],
   })
 
   useEffect(() => {
     let cleanup = true
     if (cleanup) {
-      status === 'authenticated' && getUserByEmail({ variables: { email: email } })
+      googleAuth.status === 'authenticated' &&
+        getUserByEmail({ variables: { email: googleAuth.email } })
     }
     return () => {
       cleanup = false
     }
-  }, [email, getUserByEmail, status])
+  }, [getUserByEmail, googleAuth.email, googleAuth.status])
 
   const handleClickButtonFollow = data => {
-    if (status === 'unauthenticated') {
+    if (googleAuth.status === 'unauthenticated') {
       return toggleModal()
     }
-    getFollow({ variables: { user: data, email: email } })
+    getFollow({ variables: { user: data, email: googleAuth.email } })
   }
 
   const handleClickButtonUnFollow = data => {
-    getUnFollow({ variables: { user: data, email: email } })
+    getUnFollow({ variables: { user: data, email: googleAuth.email } })
   }
 
   const isMath =
-    status === 'authenticated' && dataUser?.findUser.following.some(userId => userId === user)
+    googleAuth.status === 'authenticated' &&
+    dataUser?.findUser.following.some(userId => userId === user)
 
   return isMath ? (
     <TouchableOpacity

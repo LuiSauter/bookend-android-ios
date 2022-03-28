@@ -11,12 +11,14 @@ import { useToggle } from '../../hooks/useToggle'
 import { IconButton } from 'react-native-paper'
 
 const BtnLike = ({ id }) => {
-  const { googleAuth } = useAuth()
-  const { email, status } = googleAuth
   const { colors } = useTheme()
   const [like, setLike] = useState(false)
   const [likeCount, setLikeCount] = useState(null)
   const { toggleModal } = useToggle()
+  const { googleAuth } = useAuth()
+
+  const { email, status } = googleAuth
+
   const { data } = useQuery(FINDONE_POST, {
     variables: { id: id },
   })
@@ -95,7 +97,9 @@ const BtnLike = ({ id }) => {
             borderless: true,
             radius: 22,
           }}
-          style={({ pressed }) => [{ backgroundColor: pressed ? 'transparent' : 'transparent' }]}
+          style={({ pressed }) => [
+            { backgroundColor: pressed ? 'transparent' : 'transparent', paddingTop: 2 },
+          ]}
         >
           <IconButton
             icon='heart'

@@ -1,28 +1,10 @@
-import React, { useEffect, useState, memo } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { useLazyQuery } from '@apollo/client'
+import React, { useState } from 'react'
+import { StyleSheet, View } from 'react-native'
 import { IconButton, TouchableRipple, useTheme, Menu, Divider } from 'react-native-paper'
 
-import { FIND_USER } from '../../user/graphql-queries'
-import BtnFollow from './BtnFollow'
-import { useAuth } from '../../hooks/useAuth'
-
-const BtnOptions = ({ username, user }) => {
+const BtnOptions = ({ user, emailOfUser, username }) => {
   const { colors } = useTheme()
   const [visible, setVisible] = useState(false)
-  const { googleAuth } = useAuth()
-  const { status, email } = googleAuth
-  const [getUserByEmail, { data: dataUser }] = useLazyQuery(FIND_USER)
-
-  useEffect(() => {
-    let cleanup = true
-    if (cleanup) {
-      status === 'authenticated' && getUserByEmail({ variables: { email: email } })
-    }
-    return () => {
-      cleanup = false
-    }
-  }, [email, getUserByEmail, status])
 
   const showMenu = () => setVisible(!visible)
 
@@ -59,18 +41,6 @@ const BtnOptions = ({ username, user }) => {
           title='Reportar un problema'
           disabled={true}
         />
-        {dataUser?.findUser.me.user !== user && (
-          <Menu.Item
-            pressColor='transparent'
-            textStyle={{ color: colors.text, fontSize: 18, width: '130%' }}
-            title={
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18, color: colors.text }}>@{username}</Text>
-                <BtnFollow user={user} />
-              </View>
-            }
-          />
-        )}
         <Divider />
         <Menu.Item
           contentStyle={{ width: '100%' }}
@@ -82,7 +52,7 @@ const BtnOptions = ({ username, user }) => {
     </View>
   )
 }
-export default memo(BtnOptions)
+export default BtnOptions
 
 const styles = StyleSheet.create({
   btn: { borderRadius: 16 },
