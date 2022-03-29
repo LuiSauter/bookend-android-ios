@@ -1,27 +1,35 @@
 import React, { createContext, useEffect, useState, useCallback, useMemo } from 'react'
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import auth from '@react-native-firebase/auth'
-
-export const AuthContext = createContext({})
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { storageAuth } from '../config/contants'
 
 export const INITIAL_STATE = {
   email: '',
   name: '',
   image: '',
   status: 'unauthenticated',
+  user: '',
 }
 
-export const AuthProvider = ({ children }) => {
-  // const [user, setUser] = useState(null)
-  const [loadingInitial, setLoadingInitial] = useState(true)
-  const [loading, setLoading] = useState(false)
-  const [googleAuth, setGoogleAuth] = useState(INITIAL_STATE)
+export const AuthContext = createContext({})
 
-  const handleGoogleAuthentication = useCallback(({ email, name, image, status }) => {
-    const newAuthGoogle = { email, name, image, status }
-    // const jsonValue = JSON.stringify(newAuthGoogle)
+let authObjectStorage
+const getAuthData = async () => {
+  const jsonValue = await AsyncStorage.getItem(storageAuth)
+  return jsonValue === null ? INITIAL_STATE : JSON.parse(jsonValue)
+}
+getAuthData().then(res => (authObjectStorage = res))
+
+export const AuthProvider = ({ children }) => {
+  const [loading, setLoading] = useState(false)
+  const [googleAuth, setGoogleAuth] = useState(authObjectStorage)
+
+  const handleGoogleAuthentication = useCallback(async ({ email, name, image, status, user }) => {
+    const newAuthGoogle = { email, name, image, status, user }
+    const jsonValue = JSON.stringify(newAuthGoogle)
     setGoogleAuth(newAuthGoogle)
-    // await AsyncStorage.setItem(storageAuth, jsonValue)
+    await AsyncStorage.setItem(storageAuth, jsonValue)
   }, [])
 
   const onAuthStateChanged = useCallback(
@@ -32,11 +40,11 @@ export const AuthProvider = ({ children }) => {
           name: getUser?.displayName,
           image: getUser?.photoURL,
           status: 'authenticated',
+          user: '',
         })
       } else {
         handleGoogleAuthentication(INITIAL_STATE)
       }
-      setLoadingInitial(false)
     },
     [handleGoogleAuthentication],
   )
