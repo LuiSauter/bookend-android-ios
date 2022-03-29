@@ -1,5 +1,5 @@
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { AppRegistry, Appearance, LogBox } from 'react-native'
-import React, { useState, useCallback, useMemo } from 'react'
 import {
   NavigationContainer,
   DarkTheme as NavigationDarkTheme,
@@ -14,11 +14,14 @@ import {
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import App from './App'
 import { name as appName } from './app.json'
 import { ToggleContext } from './context/ToggleContext'
 import { colors, colorsLight } from './config/colors'
+import { AuthProvider } from './context/AuthContext'
+import { storageTheme } from './config/contants'
 LogBox.ignoreLogs(['EventEmitter.removeListener'])
 
 const light = {
@@ -83,13 +86,59 @@ const client = new ApolloClient({
   cache,
 })
 
+const storageDark = async () => {
+  try {
+    return await AsyncStorage.setItem(storageTheme, 'dark')
+  } catch (error) {
+    console.error(error, 'Luis parece que hubo un error, storageDark')
+  }
+}
+
+const storageLight = async () => {
+  try {
+    return await AsyncStorage.setItem(storageTheme, 'light')
+  } catch (error) {
+    console.error(error, 'Luis parece que hubo un error, storageLight')
+  }
+}
+
+const getThemeStorage = async () => {
+  try {
+    const value = await AsyncStorage.getItem(storageTheme)
+    return value === null ? 'dark' : value
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default function Main() {
   const colorScheme = Appearance.getColorScheme()
   const [isThemeDark, setIsThemeDark] = useState(colorScheme === 'dark')
+
   const [showModal, setShow] = useState(false)
   const [word, setWord] = useState('')
 
-  const toggleTheme = useCallback(() => setIsThemeDark(!isThemeDark), [isThemeDark])
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      getThemeStorage().then(res => setIsThemeDark(res === 'dark'))
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      isThemeDark ? storageDark() : storageLight()
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [isThemeDark])
+
+  const toggleTheme = useCallback(async () => setIsThemeDark(!isThemeDark), [isThemeDark])
   const toggleModal = useCallback(() => setShow(!showModal), [showModal])
   const handleChangeWord = useCallback(text => setWord(text), [])
 
@@ -105,9 +154,11 @@ export default function Main() {
           settings={{ icon: props => <Ionicons {...props} /> }}
         >
           <SafeAreaProvider>
-            <NavigationContainer theme={isThemeDark ? dark : light}>
-              <App />
-            </NavigationContainer>
+            <AuthProvider>
+              <NavigationContainer theme={isThemeDark ? dark : light}>
+                <App />
+              </NavigationContainer>
+            </AuthProvider>
           </SafeAreaProvider>
         </PaperProvider>
       </ToggleContext.Provider>
