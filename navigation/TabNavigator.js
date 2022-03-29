@@ -21,8 +21,7 @@ const TabNavigator = () => {
   const { googleAuth, handleGoogleAuthentication } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
   const [scrollTop, setScrollTop] = useState(false)
-
-  const { email, image, status, name } = googleAuth
+  const { status, email, name, image, user } = googleAuth
 
   useEffect(() => {
     let cleanup = true
@@ -44,12 +43,13 @@ const TabNavigator = () => {
           name: data?.findUser ? data?.findUser.me.name : name,
           image: data?.findUser ? data?.findUser.me.photo : image,
           status: status,
+          user: data?.findUser ? data?.findUser.me.user : user,
         })
     }
     return () => {
       cleanup = false
     }
-  }, [data?.findUser, email, handleGoogleAuthentication, image, name, status])
+  }, [data?.findUser, email, handleGoogleAuthentication, image, name, status, user])
 
   const scrollToTop = () => setScrollTop(!scrollTop)
 
