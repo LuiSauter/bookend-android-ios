@@ -39,7 +39,7 @@ const HeaderProfile = ({
       <View style={{ marginHorizontal: 16, marginVertical: 10 }}>
         <View style={styles.name}>
           <NameUser name={name} verified={verified} fontSize={20} />
-          {userEmail !== email && <BtnFollow username={username} user={user} />}
+          {userEmail !== email && <BtnFollow user={user} />}
           {userEmail === email && (
             <TouchableOpacity activeOpacity={0.7} onPress={navigateToEditProfile}>
               <Text style={[styles.edit, { borderColor: colors.text, color: colors.text }]}>

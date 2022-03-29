@@ -1,5 +1,5 @@
 import React, { useEffect, memo } from 'react'
-import { Text, TouchableOpacity } from 'react-native'
+import { Text, ActivityIndicator } from 'react-native'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
 
@@ -7,87 +7,86 @@ import { FOLLOW_USER, UNFOLLOW_USER } from '../../user/graphql-mutation'
 import { FIND_USER } from '../../user/graphql-queries'
 import { useToggle } from '../../hooks/useToggle'
 import { useAuth } from '../../hooks/useAuth'
+import { TouchableRipple } from 'react-native-paper'
 
 const BtnFollow = ({ user }) => {
   const { googleAuth } = useAuth()
+  const { status, email } = googleAuth
   const { toggleModal } = useToggle()
   const { colors } = useTheme()
   const [getUserByEmail, { data: dataUser }] = useLazyQuery(FIND_USER)
-  const [getFollow] = useMutation(FOLLOW_USER, {
-    refetchQueries: [{ query: FIND_USER, variables: { email: googleAuth.email } }],
+  const [getFollow, { loading }] = useMutation(FOLLOW_USER, {
+    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
   })
 
-  const [getUnFollow] = useMutation(UNFOLLOW_USER, {
-    refetchQueries: [{ query: FIND_USER, variables: { email: googleAuth.email } }],
+  const [getUnFollow, { loading: loadingUnFollow }] = useMutation(UNFOLLOW_USER, {
+    refetchQueries: [{ query: FIND_USER, variables: { email: email } }],
   })
 
   useEffect(() => {
     let cleanup = true
     if (cleanup) {
-      googleAuth.status === 'authenticated' &&
-        getUserByEmail({ variables: { email: googleAuth.email } })
+      status === 'authenticated' && getUserByEmail({ variables: { email: email } })
     }
     return () => {
       cleanup = false
     }
-  }, [getUserByEmail, googleAuth.email, googleAuth.status])
+  }, [getUserByEmail, email, status])
+
+  const isMatch =
+    status === 'authenticated' && dataUser?.findUser.following.some(userId => userId === user)
 
   const handleClickButtonFollow = data => {
-    if (googleAuth.status === 'unauthenticated') {
+    if (status === 'unauthenticated') {
       return toggleModal()
     }
-    getFollow({ variables: { user: data, email: googleAuth.email } })
+    getFollow({ variables: { user: data, email: email } })
   }
 
   const handleClickButtonUnFollow = data => {
-    getUnFollow({ variables: { user: data, email: googleAuth.email } })
+    getUnFollow({ variables: { user: data, email: email } })
   }
 
-  const isMath =
-    googleAuth.status === 'authenticated' &&
-    dataUser?.findUser.following.some(userId => userId === user)
-
-  return isMath ? (
-    <TouchableOpacity
-      style={{ marginLeft: 16 }}
-      activeOpacity={0.6}
-      onPress={() => handleClickButtonUnFollow(user)}
+  return (
+    <TouchableRipple
+      onPress={() => {
+        isMatch ? handleClickButtonUnFollow(user) : handleClickButtonFollow(user)
+      }}
+      borderless={true}
+      rippleColor={colors.colorUnderlay}
+      style={{
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: isMatch ? colors.textGray : colors.colorThirdBlue,
+        backgroundColor: isMatch ? 'transparent' : colors.colorThirdBlue,
+        paddingHorizontal: 10,
+        paddingBottom: 4,
+        paddingTop: 3,
+      }}
     >
-      <Text
-        style={{
-          color: colors.text,
-          borderWidth: 1,
-          borderRadius: 16,
-          borderColor: colors.text,
-          paddingHorizontal: 10,
-          paddingBottom: 3,
-          paddingTop: 3,
-          fontSize: 16,
-        }}
-      >
-        Dejar de seguir
-      </Text>
-    </TouchableOpacity>
-  ) : (
-    <TouchableOpacity
-      style={{ marginLeft: 16 }}
-      activeOpacity={0.6}
-      onPress={() => handleClickButtonFollow(user)}
-    >
-      <Text
-        style={{
-          color: colors.white,
-          backgroundColor: colors.colorThirdBlue,
-          borderRadius: 16,
-          paddingHorizontal: 10,
-          paddingBottom: 4,
-          paddingTop: 2,
-          fontSize: 16,
-        }}
-      >
-        Seguir
-      </Text>
-    </TouchableOpacity>
+      {loading || loadingUnFollow ? (
+        <ActivityIndicator
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 1,
+            paddingHorizontal: 10,
+          }}
+          animating={true}
+          color={isMatch ? colors.colorThirdBlue : colors.white}
+          size='small'
+        />
+      ) : (
+        <Text
+          style={{
+            color: isMatch ? colors.textGray : colors.text,
+            fontSize: 16,
+          }}
+        >
+          {isMatch ? 'Dejar de seguir' : 'Seguir'}
+        </Text>
+      )}
+    </TouchableRipple>
   )
 }
 export default memo(BtnFollow)
