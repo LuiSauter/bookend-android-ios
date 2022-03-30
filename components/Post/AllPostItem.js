@@ -142,7 +142,6 @@ const AllPostItem = ({
           animated={false}
           showHideTransition={'none'}
           backgroundColor={dominantColorString}
-          translucent={true}
         />
       )}
       <ImageView
