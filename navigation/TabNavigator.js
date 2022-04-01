@@ -13,6 +13,8 @@ import HomeScreen from '../screens/HomeScreen'
 import Search from '../components/Search/Search'
 import { useToggle } from '../hooks/useToggle'
 
+const INITIAL_STATE = { home: false, books: false }
+
 const Tab = createBottomTabNavigator()
 
 const TabNavigator = () => {
@@ -20,7 +22,7 @@ const TabNavigator = () => {
   const { handleChangeWord, word, toggleModal } = useToggle()
   const { googleAuth, handleGoogleAuthentication } = useAuth()
   const [getUser, { data }] = useLazyQuery(FIND_USER)
-  const [scrollTop, setScrollTop] = useState(false)
+  const [scrollTop, setScrollTop] = useState(INITIAL_STATE)
   const { status, email, name, image, user } = googleAuth
 
   useEffect(() => {
@@ -51,7 +53,8 @@ const TabNavigator = () => {
     }
   }, [data?.findUser, email, handleGoogleAuthentication, image, name, status, user])
 
-  const scrollToTop = () => setScrollTop(!scrollTop)
+  const scrollToTopHome = () => setScrollTop(prev => ({ ...prev, home: !prev.home }))
+  const scrollToTopBooks = () => setScrollTop(prev => ({ ...prev, books: !prev.books }))
 
   return (
     <Tab.Navigator
@@ -130,7 +133,7 @@ const TabNavigator = () => {
         options={() => ({
           title: 'Inicio',
           headerTitle: ({ tintColor }) => (
-            <TouchableOpacity activeOpacity={0.9} onPress={scrollToTop}>
+            <TouchableOpacity activeOpacity={0.9} onPress={scrollToTopHome}>
               <Text style={{ fontSize: 20, color: tintColor }}>Inicio</Text>
             </TouchableOpacity>
           ),
@@ -139,18 +142,28 @@ const TabNavigator = () => {
           ),
         })}
       >
-        {props => <HomeScreen {...props} scrollTop={scrollTop} scrollToTop={scrollToTop} />}
+        {props => (
+          <HomeScreen {...props} scrollTop={scrollTop.home} scrollToTop={scrollToTopHome} />
+        )}
       </Tab.Screen>
       <Tab.Screen
         name='BookScreen'
-        component={BookScreen}
         options={{
           title: 'Books',
+          headerTitle: ({ tintColor }) => (
+            <TouchableOpacity activeOpacity={0.9} onPress={scrollToTopBooks}>
+              <Text style={{ fontSize: 20, color: tintColor }}>Books</Text>
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ color, focused }) => (
             <IconButton icon={focused ? 'book' : 'book-outline'} color={color} />
           ),
         }}
-      />
+      >
+        {props => (
+          <BookScreen {...props} scrollTop={scrollTop.books} scrollToTop={scrollToTopBooks} />
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name='SearchScreen'
         component={SearchScreen}
