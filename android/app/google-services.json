@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
-          "client_id": "452390249090-vcbqf0u40ujtop4quiq1g6v5udjhk7ta.apps.googleusercontent.com",
+          "client_id": "452390249090-00oki1ne2gb59n0c8sqe84egcb8bvtrp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.bookendmobile",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "452390249090-3a4mva5mad9emqab1p142q8dbqfa0511.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bookendmobile",
+            "certificate_hash": "bcdf4d7b4f36794b0bac671529c4215640d80802"
+          }
+        },
+        {
+          "client_id": "452390249090-9u74otai2qqvu135qjtfmp4hfobfc1ed.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bookendmobile",
+            "certificate_hash": "31a4f2c37413f2f45b85ee6d3eeaaa36f152832d"
           }
         },
         {
