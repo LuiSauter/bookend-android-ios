@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
-        console.error(error, error.code, ' Luis, user cancelled the login flow')
+        console.log(error, error.code, ' Luis, user cancelled the login flow')
       } else if (error.code === statusCodes.IN_PROGRESS) {
         // operation (e.g. sign in) is in progress already
         console.error(error, error.code, ' Luis, operation (e.g. sign in) is in progress already')

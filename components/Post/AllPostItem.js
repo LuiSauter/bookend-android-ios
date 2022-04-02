@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useCallback, memo } from 'react'
+import React, { useState, useEffect, Fragment, memo } from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity, StatusBar } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useLazyQuery, useQuery } from '@apollo/client'
@@ -8,13 +8,9 @@ import ImageView from 'react-native-image-viewing'
 import useTimeAgo from '../../hooks/useTimeAgo'
 import { FIND_USER_BY_USER } from '../../user/graphql-queries'
 import { GET_DOMINANT_COLOR } from '../../post/graphql-queries'
-import userDefault from '../../assets/img/default-user.png'
 import NameUser from '../NameUser'
 import BtnOptions from '../Button/BtnOptions'
-import { colorsRandom } from '../../config/colors'
 import MultipleButtons from '../MultipleButtons'
-
-const backgroundTintColorRandom = colorsRandom[Math.floor(Math.random() * colorsRandom.length)]
 
 const AllPostItem = ({
   bookUrl,
@@ -34,7 +30,7 @@ const AllPostItem = ({
   const [isVisible, setIsVisible] = useState(false)
   const navigation = useNavigation()
 
-  const { data, loading } = useQuery(FIND_USER_BY_USER, { variables: { user: user } })
+  const { data } = useQuery(FIND_USER_BY_USER, { variables: { user: user } })
   const { data: dataDominantColor } = useQuery(GET_DOMINANT_COLOR, { variables: { image: image } })
   const [getColor, { data: userDominantColor }] = useLazyQuery(GET_DOMINANT_COLOR)
 
@@ -50,7 +46,7 @@ const AllPostItem = ({
 
   const activeModal = () => setIsVisible(!isVisible)
 
-  const navigateToPost = useCallback(() => {
+  const navigateToPost = () => {
     return navigation.navigate('DetailScreen', {
       id: id,
       createdAt,
@@ -74,32 +70,9 @@ const AllPostItem = ({
       comments,
       likes,
     })
-  }, [
-    author,
-    bookUrl,
-    comments,
-    createdAt,
-    data?.findUserById.description,
-    data?.findUserById.followers,
-    data?.findUserById.following,
-    data?.findUserById.location,
-    data?.findUserById.me.email,
-    data?.findUserById.me.name,
-    data?.findUserById.me.photo,
-    data?.findUserById.me.username,
-    data?.findUserById.me.verified,
-    data?.findUserById.website,
-    description,
-    hourAndMinute,
-    id,
-    image,
-    likes,
-    navigation,
-    title,
-    user,
-  ])
+  }
 
-  const navigateToProfile = useCallback(() => {
+  const navigateToProfile = () => {
     return navigation.navigate('UserScreen', {
       name: data?.findUserById.me.name,
       username: data?.findUserById.me.username,
@@ -114,21 +87,7 @@ const AllPostItem = ({
       email: data?.findUserById.me.email,
       website: data?.findUserById.website,
     })
-  }, [
-    data?.findUserById.description,
-    data?.findUserById.followers,
-    data?.findUserById.following,
-    data?.findUserById.location,
-    data?.findUserById.me.email,
-    data?.findUserById.me.name,
-    data?.findUserById.me.photo,
-    data?.findUserById.me.user,
-    data?.findUserById.me.username,
-    data?.findUserById.me.verified,
-    data?.findUserById.website,
-    navigation,
-    userDominantColor?.getColors,
-  ])
+  }
 
   const dominantColorString = dataDominantColor?.getColors
     ? `rgb(${dataDominantColor?.getColors})`
@@ -159,18 +118,14 @@ const AllPostItem = ({
       >
         <View style={styles.postContainer}>
           <View style={styles.userImgContainer}>
-            {data?.findUserById ? (
-              <TouchableRipple
-                onPress={navigateToProfile}
-                rippleColor={colors.colorUnderlay}
-                borderless={true}
-                style={{ borderRadius: 50 }}
-              >
-                <Image style={styles.userImg} source={{ uri: data?.findUserById.me.photo }} />
-              </TouchableRipple>
-            ) : (
-              <Image style={styles.userImg} source={userDefault} />
-            )}
+            <TouchableRipple
+              onPress={navigateToProfile}
+              rippleColor={colors.colorUnderlay}
+              borderless={true}
+              style={{ borderRadius: 50 }}
+            >
+              <Image style={styles.userImg} source={{ uri: data?.findUserById.me.photo }} />
+            </TouchableRipple>
           </View>
           <View style={styles.postItem}>
             <View style={styles.userTextContainer}>
@@ -182,7 +137,7 @@ const AllPostItem = ({
                     fontSize={17}
                   />
                   <Text style={[styles.userTextUsername, { color: colors.textGray }]}>
-                    <Text style={{}}>
+                    <Text>
                       @
                       {data?.findUserById.me.username.length < 6
                         ? data?.findUserById.me.username
@@ -214,18 +169,7 @@ const AllPostItem = ({
               borderless={true}
               rippleColor={colors.colorUnderlay}
             >
-              {loading ? (
-                <View
-                  style={{
-                    height: 350,
-                    width: '100%',
-                    backgroundColor: backgroundTintColorRandom,
-                    borderRadius: 12,
-                  }}
-                />
-              ) : (
-                <Image style={styles.postImg} resizeMethod='resize' source={{ uri: image }} />
-              )}
+              <Image style={styles.postImg} resizeMethod='resize' source={{ uri: image }} />
             </TouchableRipple>
             <View style={{ paddingVertical: 10 }}>
               <MultipleButtons title={title} bookUrl={bookUrl} id={id} />

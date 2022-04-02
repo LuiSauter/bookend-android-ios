@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { RefreshControl, StyleSheet, ActivityIndicator, FlatList } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
@@ -33,11 +33,12 @@ const getItemLayout = (data, index) => ({
   index,
 })
 
-const AllPostRanking = () => {
+const AllPostRanking = ({ scrollTop, scrollToTop }) => {
   const { colors } = useTheme()
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(INITIAL_PAGE)
   const [refreshing, setRefreshing] = useState(false)
+  const ref = useRef(null)
   const [getAllPostRank, { data, refetch }] = useLazyQuery(ALL_POST_RANKING)
   const { data: allPostsCount } = useQuery(ALL_POSTS_COUNT)
 
@@ -58,6 +59,17 @@ const AllPostRanking = () => {
     }
     return () => (cleanup = false)
   }, [currentPage, refetch])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      if (scrollTop) {
+        ref.current?.scrollToOffset({ offset: -100 })
+        scrollToTop()
+      }
+    }
+    return () => (cleanup = false)
+  }, [scrollToTop, scrollTop])
 
   const renderLoader = () => {
     return (
@@ -88,6 +100,7 @@ const AllPostRanking = () => {
   return data?.allPostRanking ? (
     <FlatList
       data={data?.allPostRanking}
+      ref={ref}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ListFooterComponent={renderLoader}

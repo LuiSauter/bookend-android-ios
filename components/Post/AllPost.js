@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useTheme } from 'react-native-paper'
@@ -34,6 +34,23 @@ const getItemLayout = (data, index) => ({
 })
 
 const keyExtractor = item => item.id.toString()
+
+const RenderLoader = ({ isLoading, color }) => {
+  return (
+    isLoading && (
+      <ActivityIndicator
+        style={{
+          marginBottom: 16,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        animating={true}
+        color={color}
+        size='small'
+      />
+    )
+  )
+}
 
 const AllPost = ({ scrollTop, scrollToTop }) => {
   const { colors } = useTheme()
@@ -79,37 +96,22 @@ const AllPost = ({ scrollTop, scrollToTop }) => {
     }
   }, [scrollToTop, scrollTop])
 
-  const renderLoader = () => {
-    return (
-      isLoading && (
-        <ActivityIndicator
-          style={{
-            marginBottom: 16,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          animating={true}
-          color={colors.colorThirdBlue}
-          size='small'
-        />
-      )
-    )
-  }
+  const renderLoader = RenderLoader({ isLoading: isLoading, color: colors.colorThirdBlue })
 
-  const loadMoreItem = () => {
+  const loadMoreItem = useCallback(() => {
     if (allPostsCount && allPostsCount?.postCount === data?.allPosts.length) {
       return setIsLoading(false)
     }
     setCurrentPage(currentPage + INITIAL_PAGE)
-  }
+  }, [allPostsCount, currentPage, data?.allPosts.length])
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true)
     await refetch({ pageSize: INITIAL_PAGE, skipValue: 0 })
     setCurrentPage(INITIAL_PAGE)
     setIsLoading(true)
     setRefreshing(false)
-  }
+  }, [refetch])
 
   return data?.allPosts ? (
     <FlatList
