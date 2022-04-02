@@ -4,7 +4,7 @@ import { useTheme } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import AllPostRanking from '../components/Post/AllPostRanking'
 
-const BookScreen = () => {
+const BookScreen = ({ scrollTop, scrollToTop }) => {
   const { colors, dark } = useTheme()
   return (
     <SafeAreaView
@@ -17,7 +17,7 @@ const BookScreen = () => {
         barStyle={dark ? 'light-content' : 'dark-content'}
         backgroundColor={colors.primary}
       />
-      <AllPostRanking />
+      <AllPostRanking scrollTop={scrollTop} scrollToTop={scrollToTop} />
     </SafeAreaView>
   )
 }
