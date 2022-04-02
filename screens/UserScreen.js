@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, memo } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -89,7 +89,7 @@ const UserScreen = ({ route }) => {
     }
   }, [currentPage, refetch, username])
 
-  const headerComponent = memo(() => {
+  const HeaderComponent = () => {
     return (
       <HeaderProfile
         photo={photo}
@@ -107,7 +107,7 @@ const UserScreen = ({ route }) => {
         dominantColor={dominantColor}
       />
     )
-  })
+  }
 
   const renderLoader = () => {
     return isLoading ? (
@@ -147,7 +147,7 @@ const UserScreen = ({ route }) => {
         backgroundColor={dominantColor ? `rgb(${dominantColor})` : colors.primary}
       />
       <FlatList
-        ListHeaderComponent={headerComponent}
+        ListHeaderComponent={HeaderComponent}
         data={dataAllPosts?.allPostsByUsername}
         renderItem={renderItem}
         keyExtractor={keyExtractor}

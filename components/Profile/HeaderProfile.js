@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, memo } from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import { useNavigation, useTheme } from '@react-navigation/native'
 import BtnFollow from '../Button/BtnFollow'
@@ -71,7 +71,7 @@ const HeaderProfile = ({
   )
 }
 
-export default HeaderProfile
+export default memo(HeaderProfile)
 
 const styles = StyleSheet.create({
   edit: {
