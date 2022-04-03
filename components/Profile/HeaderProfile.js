@@ -1,6 +1,8 @@
 import React, { Fragment, memo } from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import { useNavigation, useTheme } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
+import { TouchableRipple, useTheme, IconButton } from 'react-native-paper'
+
 import BtnFollow from '../Button/BtnFollow'
 import NameUser from '../NameUser'
 
@@ -18,6 +20,7 @@ const HeaderProfile = ({
   following,
   location,
   dominantColor,
+  liked,
 }) => {
   const { colors } = useTheme()
   const navigation = useNavigation()
@@ -67,6 +70,42 @@ const HeaderProfile = ({
           </Text>
         </View>
       </View>
+      {!verified && (
+        <View
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+            flexDirection: 'row',
+          }}
+        >
+          <TouchableRipple
+            style={{
+              textAlign: 'center',
+              paddingHorizontal: 16,
+              borderBottomWidth: 2,
+              borderBottomColor: colors.colorThirdBlue,
+              paddingVertical: 8,
+            }}
+            onPress={() => console.log('xd')}
+            rippleColor={colors.colorUnderlay}
+            borderless={true}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={[styles.textOpacity, { color: colors.text }]}>Me gusta</Text>
+              <IconButton
+                icon='heart-outline'
+                backgroundColor='transparent'
+                borderRadius={50}
+                color={colors.text}
+                size={10}
+                style={{ transform: [{ scale: 1.7 }] }}
+                iconStyle={{ marginRight: 0 }}
+                underlayColor='transparent'
+              />
+            </View>
+          </TouchableRipple>
+        </View>
+      )}
     </Fragment>
   )
 }
@@ -88,11 +127,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   text: {
-    fontSize: 16,
+    fontSize: 17,
     marginTop: 12,
   },
   textOpacity: {
-    fontSize: 15,
+    fontSize: 17,
   },
   profilePresentation: {
     alignItems: 'center',
