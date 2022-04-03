@@ -24,6 +24,7 @@ const DetailScreen = ({ route, navigation }) => {
     bookUrl,
     comments,
     likes,
+    liked,
     image,
     title,
     description,
@@ -65,6 +66,7 @@ const DetailScreen = ({ route, navigation }) => {
       following: following,
       email: email,
       website: website,
+      liked: liked,
     })
   }
 

@@ -52,6 +52,7 @@ const AllPostRankItem = ({
         bookUrl,
         comments,
         likes,
+        liked: data?.findUserById.liked,
       })
   }
 

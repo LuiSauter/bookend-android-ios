@@ -69,6 +69,7 @@ const AllPostItem = ({
       bookUrl,
       comments,
       likes,
+      liked: data?.findUserById.liked,
     })
   }
 
@@ -86,6 +87,7 @@ const AllPostItem = ({
       following: data?.findUserById.following,
       email: data?.findUserById.me.email,
       website: data?.findUserById.website,
+      liked: data?.findUserById.liked,
     })
   }
 

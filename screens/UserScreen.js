@@ -52,6 +52,7 @@ const UserScreen = ({ route }) => {
     email: userEmail,
     website,
     dominantColor,
+    liked,
   } = route.params
   const { googleAuth } = useAuth()
   const { email } = googleAuth
@@ -105,6 +106,7 @@ const UserScreen = ({ route }) => {
         following={following}
         location={location}
         dominantColor={dominantColor}
+        liked={liked}
       />
     )
   }
@@ -135,6 +137,8 @@ const UserScreen = ({ route }) => {
     setRefreshing(false)
   }, [refetch])
 
+  console.log(liked, 'likes')
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: colors.primary }]}
@@ -148,7 +152,7 @@ const UserScreen = ({ route }) => {
       />
       <FlatList
         ListHeaderComponent={HeaderComponent}
-        data={dataAllPosts?.allPostsByUsername}
+        data={verified ? dataAllPosts?.allPostsByUsername : []}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListFooterComponent={renderLoader}

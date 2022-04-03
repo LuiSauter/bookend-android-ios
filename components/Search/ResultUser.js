@@ -30,6 +30,7 @@ const ResultUser = ({ name, username, user, email, photo, verified }) => {
       followers: data?.findUser ? data?.findUser.followers : [],
       following: data?.findUser ? data?.findUser.following : [],
       website: data?.findUser ? data?.findUser.website : '',
+      liked: data?.findUser ? data?.findUser.liked : [],
     })
 
   return (

@@ -49,3 +49,9 @@ export const UNFOLLOW_USER = gql`
     unFollow(user: $user, email: $email)
   }
 `
+
+export const DELETE_USER = gql`
+  mutation ($user: String!) {
+    deleteUser(user: $user)
+  }
+`

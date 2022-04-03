@@ -48,6 +48,7 @@ const ResultPost = ({
       bookUrl,
       comments,
       likes,
+      liked: data?.findUserById.liked,
     })
   }
 
