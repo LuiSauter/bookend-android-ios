@@ -40,7 +40,9 @@ const BtnLike = ({ id }) => {
     }
   }, [email, getUserByEmail, status])
 
-  const isMatch = data?.findPost.likes.some(postId => postId === dataUser?.findUser.me.user)
+  const isMatch =
+    status === 'authenticated' &&
+    data?.findPost.likes.some(postId => postId === dataUser?.findUser.me.user)
 
   useEffect(() => {
     let cleanup = true

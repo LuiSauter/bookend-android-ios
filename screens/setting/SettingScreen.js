@@ -10,7 +10,7 @@ const data = [
     title: 'Tu cuenta',
     description:
       'Ve la informacion de tu cuenta y obtén más información acerca de las opciones de desactivación de la cuenta.',
-    screen: '',
+    screen: 'YourAccountScreen',
     icon: 'person-outline',
   },
   {

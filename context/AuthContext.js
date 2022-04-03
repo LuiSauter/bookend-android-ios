@@ -3,6 +3,9 @@ import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-si
 import auth from '@react-native-firebase/auth'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { storageAuth } from '../config/contants'
+import { useMutation } from '@apollo/client'
+import { LOGINQL } from '../login/graphql-mutations'
+import { ALL_USERS } from '../user/graphql-queries'
 
 export const INITIAL_STATE = {
   email: '',
@@ -24,6 +27,9 @@ getAuthData().then(res => (authObjectStorage = res))
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false)
   const [googleAuth, setGoogleAuth] = useState(authObjectStorage)
+  const [getLogin, { data }] = useMutation(LOGINQL, {
+    refetchQueries: [{ query: ALL_USERS }],
+  })
 
   const handleGoogleAuthentication = useCallback(async ({ email, name, image, status, user }) => {
     const newAuthGoogle = { email, name, image, status, user }
@@ -35,6 +41,13 @@ export const AuthProvider = ({ children }) => {
   const onAuthStateChanged = useCallback(
     getUser => {
       if (getUser) {
+        getLogin({
+          variables: {
+            email: getUser?.email,
+            name: getUser?.displayName,
+            image: getUser?.photoURL,
+          },
+        })
         handleGoogleAuthentication({
           email: getUser?.email,
           name: getUser?.displayName,
@@ -46,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         handleGoogleAuthentication(INITIAL_STATE)
       }
     },
-    [handleGoogleAuthentication],
+    [getLogin, handleGoogleAuthentication],
   )
 
   useEffect(() => {
@@ -58,6 +71,24 @@ export const AuthProvider = ({ children }) => {
       cleanup = false
     }
   }, [onAuthStateChanged])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      googleAuth.user !== '' &&
+        getLogin({
+          variables: {
+            email: googleAuth.email,
+            name: googleAuth.name,
+            image: googleAuth.image,
+          },
+        })
+    }
+    return () => {
+      cleanup = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getLogin, googleAuth.user])
 
   GoogleSignin.configure({
     webClientId: '452390249090-gcagg4eluj9v421ld7p3n2kth026c561.apps.googleusercontent.com',
@@ -74,7 +105,7 @@ export const AuthProvider = ({ children }) => {
       await GoogleSignin.hasPlayServices()
       const { idToken } = await GoogleSignin.signIn()
       const googleCredential = auth.GoogleAuthProvider.credential(idToken)
-      const currentUser = await GoogleSignin.getCurrentUser()
+      // const currentUser = await GoogleSignin.getCurrentUser()
       return auth().signInWithCredential(googleCredential)
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -109,8 +140,15 @@ export const AuthProvider = ({ children }) => {
   }, [handleGoogleAuthentication])
 
   const memoedValue = useMemo(() => {
-    return { googleAuth, handleGoogleAuthentication, signInWithGoogle, signOut, loading }
-  }, [googleAuth, signOut, signInWithGoogle, handleGoogleAuthentication, loading])
+    return {
+      googleAuth,
+      handleGoogleAuthentication,
+      signInWithGoogle,
+      signOut,
+      loading,
+      message: data?.signin ? data?.signin.message : null,
+    }
+  }, [googleAuth, handleGoogleAuthentication, signInWithGoogle, signOut, loading, data?.signin])
 
   return <AuthContext.Provider value={memoedValue}>{children}</AuthContext.Provider>
 }

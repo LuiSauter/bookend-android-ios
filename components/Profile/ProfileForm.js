@@ -1,7 +1,8 @@
-import React, { Fragment, useState } from 'react'
 import { StyleSheet, Text, View, TextInput, Image, TouchableHighlight } from 'react-native'
-import { useNavigation, useTheme } from '@react-navigation/native'
+import React, { Fragment, useState } from 'react'
+import { useNavigation } from '@react-navigation/native'
 import { Picker } from '@react-native-picker/picker'
+import { useTheme } from 'react-native-paper'
 import { useMutation } from '@apollo/client'
 
 import { UPDATE_PROFILE } from '../../user/graphql-mutation'
@@ -63,7 +64,7 @@ const ProfileForm = ({
         },
       })
       reset()
-      navigation.navigate('TabNavigation')
+      navigation.navigate('TabNavigator')
     } else {
       setError(' es requerido')
     }
@@ -110,7 +111,7 @@ const ProfileForm = ({
       />
       <Text style={[styles.text, textColor]}>
         Descripción <Text style={{ color: colors.colorThirdBlue }}>*</Text>
-        {profile.description.length === 0 && textError}
+        {profile.description && profile.description.length === 0 && textError}
       </Text>
       <TextInput
         placeholder='Write a description'
