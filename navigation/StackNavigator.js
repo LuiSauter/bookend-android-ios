@@ -9,17 +9,30 @@ import UserScreen from '../screens/UserScreen'
 import NameUser from '../components/NameUser'
 import DisplayScreen from '../screens/setting/DisplayScreen'
 import PdfScreen from '../screens/PdfScreen'
+import UpdateScreen from '../screens/UpdateScreen'
+import YourAccountScreen from '../screens/setting/YourAccountScreen'
 
 const Stack = createNativeStackNavigator()
 
 const StackNavigator = () => {
   const { colors } = useTheme()
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name='TabNavigator'
         component={TabNavigator}
         options={{ headerShown: false, title: 'Inicio' }}
+      />
+      <Stack.Screen
+        name='UpdateScreen'
+        component={UpdateScreen}
+        options={{
+          title: 'Actualizar perfil',
+          headerStyle: { backgroundColor: colors.primary },
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.text,
+        }}
       />
       <Stack.Screen
         name='SettingScreen'
@@ -36,6 +49,16 @@ const StackNavigator = () => {
         component={DisplayScreen}
         options={() => ({
           title: 'Pantalla y idiomas',
+          headerStyle: { backgroundColor: colors.primary },
+          headerTitleStyle: { color: colors.text },
+          headerTintColor: colors.text,
+        })}
+      />
+      <Stack.Screen
+        name='YourAccountScreen'
+        component={YourAccountScreen}
+        options={() => ({
+          title: 'Tu cuenta',
           headerStyle: { backgroundColor: colors.primary },
           headerTitleStyle: { color: colors.text },
           headerTintColor: colors.text,
