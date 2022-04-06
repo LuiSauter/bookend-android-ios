@@ -1,16 +1,26 @@
-import React from 'react'
-import { StyleSheet, StatusBar, View, Text, ActivityIndicator } from 'react-native'
+import { StyleSheet, StatusBar, View, Text, ActivityIndicator, Image } from 'react-native'
+import React, { useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { IconButton, Modal, Portal, TouchableRipple, useTheme } from 'react-native-paper'
+import { useLazyQuery } from '@apollo/client'
+
 import AllPost from '../components/Post/AllPost'
 import { useToggle } from '../hooks/useToggle'
 import { useAuth } from '../hooks/useAuth'
+import { FIND_USER } from '../user/graphql-queries'
+import { useNavigation } from '@react-navigation/native'
+import { GET_DOMINANT_COLOR } from '../post/graphql-queries'
+import Loading from '../components/Loading'
 
 const HomeScreen = ({ scrollTop, scrollToTop }) => {
   const { dark, colors } = useTheme()
   const { toggleModal, showModal } = useToggle()
   const { googleAuth, signInWithGoogle, signOut, loading } = useAuth()
-  const { status, name } = googleAuth
+  const { status, name, image, email } = googleAuth
+  const navigation = useNavigation()
+
+  const [getUser, { data, loading: loadingUser }] = useLazyQuery(FIND_USER)
+  const [getColor, { data: userDominantColor }] = useLazyQuery(GET_DOMINANT_COLOR)
 
   const containerStyle = {
     backgroundColor: colors.primary,
@@ -20,7 +30,39 @@ const HomeScreen = ({ scrollTop, scrollToTop }) => {
   }
 
   const background = {
-    backgroundColor: status === 'unauthenticated' ? colors.colorThirdBlue : colors.colorFourthRed,
+    backgroundColor:
+      status === 'unauthenticated' || loadingUser ? colors.colorThirdBlue : colors.colorFourthRed,
+  }
+
+  useEffect(() => {
+    let mounted = true
+    if (mounted && status === 'authenticated') {
+      getUser({ variables: { email: email } })
+      getColor({ variables: { image: image } })
+    }
+    return () => {
+      mounted = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, getUser])
+
+  const navigateToProfile = () => {
+    navigation.navigate('UserScreen', {
+      name: data?.findUser.me.name,
+      username: data?.findUser.me.username,
+      verified: data?.findUser.me.verified,
+      photo: data?.findUser.me.photo,
+      dominantColor: userDominantColor?.getColors ? userDominantColor?.getColors : '21,32,43',
+      description: data?.findUser.description,
+      user: data?.findUser.me.user,
+      location: data?.findUser.location,
+      followers: data?.findUser.followers,
+      following: data?.findUser.following,
+      email: data?.findUser.me.email,
+      website: data?.findUser.website,
+      liked: data?.findUser.liked,
+    })
+    toggleModal()
   }
 
   return (
@@ -37,9 +79,44 @@ const HomeScreen = ({ scrollTop, scrollToTop }) => {
       <AllPost scrollTop={scrollTop} scrollToTop={scrollToTop} />
       <Portal>
         <Modal visible={showModal} onDismiss={toggleModal} contentContainerStyle={containerStyle}>
-          <Text style={{ fontSize: 20, color: colors.text, textAlign: 'center' }}>
-            {status === 'unauthenticated' ? 'Iniciar sesion' : `Welcome, ${name}`}
-          </Text>
+          {status === 'authenticated' ? (
+            loadingUser ? (
+              <Loading label='cargando...' />
+            ) : (
+              <TouchableRipple
+                rippleColor={colors.colorUnderlay}
+                borderless={true}
+                onPress={navigateToProfile}
+                style={styles.buttonUser}
+              >
+                <View style={styles.viewUser}>
+                  <Image
+                    source={{ uri: image }}
+                    resizeMode='cover'
+                    style={{ width: 42, height: 42, borderRadius: 50, marginRight: 14 }}
+                  />
+                  <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                    <Text style={{ fontSize: 20, color: colors.text, textAlign: 'center' }}>
+                      {name}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        color: colors.textGray,
+                        textAlign: 'center',
+                      }}
+                    >
+                      Ver perfil
+                    </Text>
+                  </View>
+                </View>
+              </TouchableRipple>
+            )
+          ) : (
+            <Text style={{ fontSize: 20, color: colors.text, textAlign: 'center' }}>
+              Iniciar sesion
+            </Text>
+          )}
           <TouchableRipple
             onPress={() => {
               status === 'unauthenticated' ? signInWithGoogle() : signOut()
@@ -49,7 +126,7 @@ const HomeScreen = ({ scrollTop, scrollToTop }) => {
             style={styles.Touchable}
           >
             <View style={[styles.button, background]}>
-              {loading ? (
+              {loading || loadingUser ? (
                 <ActivityIndicator
                   style={styles.loading}
                   animating={true}
@@ -58,13 +135,15 @@ const HomeScreen = ({ scrollTop, scrollToTop }) => {
                 />
               ) : (
                 <IconButton
-                  icon={status === 'unauthenticated' ? 'logo-google' : 'log-out-outline'}
+                  icon={
+                    status === 'unauthenticated' || loadingUser ? 'logo-google' : 'log-out-outline'
+                  }
                   style={{ transform: [{ scale: 1.2 }] }}
                   color={colors.white}
                 />
               )}
               <Text style={styles.textLabel}>
-                {status === 'unauthenticated' ? 'Con google' : 'Cerrar sesión'}
+                {status === 'unauthenticated' || loadingUser ? 'Con google' : 'Cerrar sesión'}
               </Text>
             </View>
           </TouchableRipple>
@@ -107,5 +186,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     transform: [{ scale: 1.3 }],
+  },
+  viewUser: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonUser: {
+    paddingVertical: 10,
+    borderRadius: 12,
   },
 })

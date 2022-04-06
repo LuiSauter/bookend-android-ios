@@ -16,7 +16,8 @@ export const useAuth = () => {
     return () => {
       monted = false
     }
-  }, [message, navigation])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [message])
 
   return {
     googleAuth,
