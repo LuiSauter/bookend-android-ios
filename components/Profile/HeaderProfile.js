@@ -1,10 +1,11 @@
-import React, { Fragment, memo } from 'react'
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Pressable } from 'react-native'
+import React, { Fragment, memo, useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { TouchableRipple, useTheme, IconButton } from 'react-native-paper'
+import { useTheme } from 'react-native-paper'
 
 import BtnFollow from '../Button/BtnFollow'
 import NameUser from '../NameUser'
+import { useAuth } from '../../hooks/useAuth'
 
 const HeaderProfile = ({
   photo,
@@ -21,10 +22,12 @@ const HeaderProfile = ({
   location,
   dominantColor,
   liked,
+  headerTopTab,
 }) => {
   const { colors } = useTheme()
   const navigation = useNavigation()
   const navigateToEditProfile = () => navigation.navigate('UpdateScreen')
+  const { googleAuth } = useAuth()
 
   return (
     <Fragment>
@@ -39,7 +42,7 @@ const HeaderProfile = ({
           source={{ uri: photo }}
         />
       </View>
-      <View style={{ marginHorizontal: 16, marginVertical: 10 }}>
+      <View style={{ marginHorizontal: 16, marginTop: 16 }}>
         <View style={styles.name}>
           <NameUser name={name} verified={verified} fontSize={20} />
           {userEmail !== email && <BtnFollow user={user} />}
@@ -51,12 +54,18 @@ const HeaderProfile = ({
             </TouchableOpacity>
           )}
         </View>
-        <Text style={[styles.textOpacity, { color: colors.textGray }]}>@{username}</Text>
-        <Text style={[styles.text, { color: colors.text }]}>{description}</Text>
+        <Text style={[styles.text, { color: colors.textGray, paddingBottom: 10 }]}>
+          @{username}
+        </Text>
+        {description && (
+          <Text style={[styles.text, { color: colors.text, marginBottom: 10 }]}>{description}</Text>
+        )}
         <View style={styles.textPresentation}>
-          <Text style={[styles.textOpacity, { color: colors.textGray }]}>{location}</Text>
-          <Text style={{ fontSize: 15, color: colors.colorThirdBlue, marginLeft: 16 }}>
-            {website}
+          <Text style={[styles.text, { color: colors.textGray }]}>
+            📍{location ? location : '...'}
+          </Text>
+          <Text style={[styles.text, { color: colors.colorThirdBlue, marginLeft: 14 }]}>
+            💻{website ? ` ${website}` : '...'}
           </Text>
         </View>
         <View style={styles.textPresentation}>
@@ -71,40 +80,39 @@ const HeaderProfile = ({
         </View>
       </View>
       {!verified && (
-        <View
-          style={{
-            borderBottomWidth: 1,
-            borderBottomColor: colors.border,
-            flexDirection: 'row',
-          }}
-        >
-          <TouchableRipple
-            style={{
-              textAlign: 'center',
-              paddingHorizontal: 16,
-              borderBottomWidth: 2,
-              borderBottomColor: colors.colorThirdBlue,
-              paddingVertical: 8,
-            }}
-            onPress={() => console.log('xd')}
-            rippleColor={colors.colorUnderlay}
-            borderless={true}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={[styles.textOpacity, { color: colors.text }]}>Me gusta</Text>
-              <IconButton
-                icon='heart-outline'
-                backgroundColor='transparent'
-                borderRadius={50}
-                color={colors.text}
-                size={10}
-                style={{ transform: [{ scale: 1.7 }] }}
-                iconStyle={{ marginRight: 0 }}
-                underlayColor='transparent'
-              />
+        <Fragment>
+          <View style={[styles.tabNav, { borderBottomColor: colors.border }]}>
+            {headerTopTab.liked && (
+              <Pressable
+                android_ripple={{ color: colors.colorUnderlay, borderless: true }}
+                style={({ pressed }) => [
+                  styles.tabNavButton,
+                  { backgroundColor: pressed ? 'transparent' : 'transparent' },
+                ]}
+                onPress={() => console.log('xd')}
+              >
+                <View style={styles.tabNavBox}>
+                  <Text style={[styles.tabNavText, { color: colors.text }]}>Me gusta</Text>
+                  <View style={[styles.tabNavActive, { borderColor: colors.colorThirdBlue }]} />
+                </View>
+              </Pressable>
+            )}
+          </View>
+          {liked.length === 0 && (
+            <View style={styles.notPostFoundLiked}>
+              {googleAuth.status === 'authenticated' && (
+                <Text style={[styles.notFoundTitle, { color: colors.text }]}>
+                  Publicaciones que te gustaron
+                </Text>
+              )}
+              <Text style={[styles.notFoundResult, { color: colors.textGray }]}>
+                {googleAuth.status === 'authenticated'
+                  ? 'Cuando te haya gustado una publicación aparecera aquí.'
+                  : 'Aún no le gustaron publicaciones.'}
+              </Text>
             </View>
-          </TouchableRipple>
-        </View>
+          )}
+        </Fragment>
       )}
     </Fragment>
   )
@@ -127,10 +135,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   text: {
-    fontSize: 17,
-    marginTop: 12,
-  },
-  textOpacity: {
     fontSize: 17,
   },
   profilePresentation: {
@@ -161,5 +165,42 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     position: 'relative',
   },
-  textPresentation: { flex: 1, flexDirection: 'row' },
+  textPresentation: { flex: 1, flexDirection: 'row', marginBottom: 10 },
+  tabNav: {
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+  },
+  tabNavButton: {
+    textAlign: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  tabNavBox: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabNavText: {
+    fontSize: 17,
+    paddingBottom: 6,
+  },
+  tabNavActive: {
+    borderWidth: 2,
+    width: '90%',
+    borderRadius: 100,
+  },
+  notPostFoundLiked: {
+    paddingVertical: 24,
+  },
+  notFoundTitle: {
+    fontSize: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    paddingBottom: 8,
+  },
+  notFoundResult: {
+    fontSize: 18,
+    textAlign: 'center',
+    paddingHorizontal: 8,
+  },
 })
