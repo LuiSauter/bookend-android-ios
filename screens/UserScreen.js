@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useReducer } from 'react'
 import {
   ActivityIndicator,
   FlatList,
@@ -7,16 +7,40 @@ import {
   StatusBar,
   StyleSheet,
   View,
+  Text,
 } from 'react-native'
 import { useLazyQuery } from '@apollo/client'
 import { useTheme } from '@react-navigation/native'
 
-import { ALL_POST_BY_USER, ALL_POST_BY_USER_COUNT } from '../post/graphql-queries'
+import { ALL_POST_BY_USER, ALL_POST_BY_USER_COUNT, FINDONE_POST } from '../post/graphql-queries'
 import AllPostItem from '../components/Post/AllPostItem'
 import { useAuth } from '../hooks/useAuth'
 import HeaderProfile from '../components/Profile/HeaderProfile'
 
+const INITIAL_REDUCER_STATE = { posts: [], loading: false }
+const INITIAL_STATE = { liked: true }
+
 const INITIAL_PAGE = 5
+
+const reducer = (state, action) => {
+  const { type } = action
+  switch (type) {
+    case '@add-post': {
+      const isMatch = state.posts.some(post => post.id === action.payload.id)
+      if (isMatch) {
+        return state
+      } else {
+        return {
+          ...state,
+          posts: [...action.payload, ...state.posts],
+        }
+      }
+    }
+    default: {
+      return
+    }
+  }
+}
 
 const renderItem = ({ item }) => {
   return (
@@ -61,6 +85,9 @@ const UserScreen = ({ route }) => {
   const [refreshing, setRefreshing] = useState(false)
   const [currentPage, setCurrentPage] = useState(INITIAL_PAGE)
   const [isLoading, setIsLoading] = useState(true)
+  const [headerTopTab, setHeaderTopTab] = useState(INITIAL_STATE)
+  const [state, dispatch] = useReducer(reducer, INITIAL_REDUCER_STATE)
+  const [getPost, { data }] = useLazyQuery(FINDONE_POST)
 
   const [getAllPost, { data: dataAllPosts, refetch }] = useLazyQuery(ALL_POST_BY_USER)
   const [getCountAllPost, { data: CountAllPosts }] = useLazyQuery(ALL_POST_BY_USER_COUNT)
@@ -90,6 +117,21 @@ const UserScreen = ({ route }) => {
     }
   }, [currentPage, refetch, username])
 
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup && !verified) {
+      if (liked.length > 0) {
+        console.log(liked)
+        // getPost({ variables: { id: id } })
+      } else {
+        setIsLoading(false)
+      }
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [liked, verified])
+
   const HeaderComponent = () => {
     return (
       <HeaderProfile
@@ -107,6 +149,7 @@ const UserScreen = ({ route }) => {
         location={location}
         dominantColor={dominantColor}
         liked={liked}
+        headerTopTab={headerTopTab}
       />
     )
   }
@@ -137,7 +180,7 @@ const UserScreen = ({ route }) => {
     setRefreshing(false)
   }, [refetch])
 
-  console.log(liked, 'likes')
+  const dataOfILiked = headerTopTab.liked && []
 
   return (
     <SafeAreaView
@@ -152,7 +195,7 @@ const UserScreen = ({ route }) => {
       />
       <FlatList
         ListHeaderComponent={HeaderComponent}
-        data={verified ? dataAllPosts?.allPostsByUsername : []}
+        data={verified ? dataAllPosts?.allPostsByUsername : dataOfILiked}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         ListFooterComponent={renderLoader}
