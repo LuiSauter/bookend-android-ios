@@ -32,7 +32,7 @@ const reducer = (state, action) => {
       } else {
         return {
           ...state,
-          posts: [...action.payload, ...state.posts],
+          posts: [action.payload, ...state.posts],
         }
       }
     }
@@ -121,8 +121,8 @@ const UserScreen = ({ route }) => {
     let cleanup = true
     if (cleanup && !verified) {
       if (liked.length > 0) {
-        console.log(liked)
-        // getPost({ variables: { id: id } })
+        getPost({ variables: { id: liked[0] } })
+        setIsLoading(false)
       } else {
         setIsLoading(false)
       }
@@ -130,7 +130,17 @@ const UserScreen = ({ route }) => {
     return () => {
       cleanup = false
     }
-  }, [liked, verified])
+  }, [getPost, liked, verified])
+
+  useEffect(() => {
+    let cleanup = true
+    if (cleanup) {
+      data?.findPost && dispatch({ type: '@add-post', payload: data?.findPost })
+    }
+    return () => {
+      cleanup = false
+    }
+  }, [data?.findPost])
 
   const HeaderComponent = () => {
     return (
@@ -180,7 +190,7 @@ const UserScreen = ({ route }) => {
     setRefreshing(false)
   }, [refetch])
 
-  const dataOfILiked = headerTopTab.liked && []
+  const dataOfILiked = headerTopTab.liked && state.posts
 
   return (
     <SafeAreaView
